@@ -69,6 +69,37 @@ app.post("/api/books/add", async (req, res) => {
     });
 });
 
+app.put("/api/books/update/:id", async(req, res) => {
+    let input = req.body;
+    let conn= await db.getConn();
+    let result= await db.executeQuery(conn, `SELECT * FROM buku WHERE id_buku = '${req.params.id}'`);
+    if (result.length == 0) {
+        return res.status(404).json({
+            message: 'Buku tidak terdaftar terdaftar di perpustakaan',
+            status_code: 404
+        });   
+    }
+
+    conn.release();
+
+    conn= await db.getConn();
+    result= await db.executeQuery(conn, `UPDATE buku set id_perpus = '${input.id_perpus}' where id_buku = '${req.params.id}'`);
+    if (result.affectedRows === 0) {
+        return res.status(500).json({
+            message: 'Terjadi kesalahan pada server',
+            status_code: 500
+        });
+
+    }else{
+        return res.status(200).json({
+            message: 'Update buku berhasil',
+            status_code: 500
+        });
+    }
+    conn.release();
+
+});
+
 
 
 app.listen(3000, function() {
