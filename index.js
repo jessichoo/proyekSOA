@@ -188,7 +188,7 @@ app.post("/api/recharge/apihit", async(req,res)=>{
     conn.release();
 });
 
-app.get("/api/library/books/:judul", async(req,res)=>{
+app.get("/api/library/daftarbuku/:judul", async(req,res)=>{
     let conn = await db.getConn();
     
     conn.release();
@@ -236,21 +236,11 @@ app.get("/api/library/books/:id_perpus", async(req,res)=>{
         for (let i = 0; i < result.length; i++) {
             conn = await db.getConn();
             let buku = await db.executeQuery(conn, `SELECT * FROM buku WHERE id_buku = '${result[i].id_buku}'`);
-            try {
-                let val = await axios.get("https://www.googleapis.com/books/v1/volumes/" + buku.id_buku_api);
-        
-                let result1 = val.data;
-        
-                let data =  {
-                    id_buku: result1.id,
-                    nama_buku: result1.volumeInfo.title
-                }
-        
-                daftar.push(data); 
+            const data =  {
+                id_buku: buku[0].id_buku,
+                nama_buku: buku[0].judul_buku
             }
-            catch(error) {
-                console.log(error); 
-            }
+            daftar.push(data);
             conn.release();
         }
         return res.status(200).json({
