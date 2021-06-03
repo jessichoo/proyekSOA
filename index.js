@@ -14,9 +14,9 @@ function autogen(input){
 
 app.post("/api/books/add", async (req, res) => {
     const input = req.body;
-    let arrHasil = []; 
+    let arrHasil = [];
     try {
-        let val = await axios.get("https://www.googleapis.com/books/v1/volumes/" + input.id_buku);
+        let val = await axios.get("https://www.googleapis.com/books/v1/volumes/" + input.id_buku_api);
 
         let result = val.data; 
         // console.log(result);
@@ -35,13 +35,14 @@ app.post("/api/books/add", async (req, res) => {
     }
 
     let conn= await db.getConn();
-    let result= await db.executeQuery(conn, `SELECT id_buku FROM buku WHERE id_perpus = '${input.id_perpus}'`);
+    let result= await db.executeQuery(conn, `SELECT * FROM buku WHERE id_buku_api = '${input.id_buku_api}'`);
     if (result.length) {
         return res.status(409).json({
-            message: 'Buku sudah terdaftar di perpustakaan',
+            message: 'Gagal menambahkan! Buku sudah terdaftar',
             status_code: 409
         });
     }
+
     conn.release();
 
     //autogen
@@ -50,11 +51,44 @@ app.post("/api/books/add", async (req, res) => {
     var pad = "000";
     var str = result.length + 1 + "" ;
     var id = "B" + pad.substring(0, pad.length - str.length) + str;
+
+    conn.release();
+
+    //insert buku
+    conn= await db.getConn();
+    result= await db.executeQuery(conn, `INSERT INTO buku VALUES ('${id}', '${arrHasil[0]['nama_buku']}', '${input.id_buku_api}')`);
+    if (result.affectedRows === 0) {
+        return res.status(500).json({
+            message: 'Terjadi kesalahan pada server',
+            status_code: 500
+        });
+    }
     conn.release();
 
 
+    return res.status(200).json({
+        message: 'Berhasil menambahkan buku ke dalam database',
+        status_code: 200
+    });
+});
+
+app.post("/api/perpus/addBook", async(req, res) => {
+    let input = req.body;
+    console.log(input);
+    
+    let conn= await db.getConn();
+    let result= await db.executeQuery(conn, `SELECT * FROM buku_perpus WHERE id_perpus = '${input.id_perpus}' AND id_buku = '${input.id_buku}'`);
+    if (result.length) {
+        return res.status(409).json({
+            message: 'Buku sudah terdaftar di perpustakaan',
+            status_code: 409
+        });
+    }
+
+    conn.release();
+
     conn= await db.getConn();
-    result= await db.executeQuery(conn, `INSERT INTO buku VALUES ('${id}', '${input.id_perpus}', '${input.id_buku}')`);
+    result= await db.executeQuery(conn, `INSERT INTO buku_perpus VALUES ('${input.id_buku}', '${input.id_perpus}', '${input.stok}')`);
     if (result.affectedRows === 0) {
         return res.status(500).json({
             message: 'Terjadi kesalahan pada server',
@@ -64,15 +98,17 @@ app.post("/api/books/add", async (req, res) => {
     conn.release();
 
     return res.status(200).json({
-        message: 'Tambah buku berhasil',
+        message: 'Berhasil menambahkan buku ke dalam perpus',
         status_code: 200
     });
+    
 });
 
-app.put("/api/books/update/:id", async(req, res) => {
+
+app.put("/api/perpus/updateBook/:id", async(req, res) => {
     let input = req.body;
     let conn= await db.getConn();
-    let result= await db.executeQuery(conn, `SELECT * FROM buku WHERE id_buku = '${req.params.id}'`);
+    let result= await db.executeQuery(conn, `SELECT * FROM buku_perpus WHERE id_buku = '${req.params.id}' AND id_perpus = '${req.body.id_perpus}'`);
     if (result.length == 0) {
         return res.status(404).json({
             message: 'Buku tidak terdaftar terdaftar di perpustakaan',
@@ -83,7 +119,8 @@ app.put("/api/books/update/:id", async(req, res) => {
     conn.release();
 
     conn= await db.getConn();
-    result= await db.executeQuery(conn, `UPDATE buku set id_perpus = '${input.id_perpus}' where id_buku = '${req.params.id}'`);
+    result= await db.executeQuery(conn, `UPDATE buku_perpus set stok = '${input.stok}' where id_buku = '${req.params.id}' AND id_perpus = '${req.body.id_perpus}'`);
+    console.log(result);
     if (result.affectedRows === 0) {
         return res.status(500).json({
             message: 'Terjadi kesalahan pada server',
@@ -92,14 +129,16 @@ app.put("/api/books/update/:id", async(req, res) => {
 
     }else{
         return res.status(200).json({
-            message: 'Update buku berhasil',
+            message: 'Update stok buku berhasil',
             status_code: 500
         });
     }
-    conn.release();
 
 });
 
+
+//delete buku
+//tambah peminjaman buku -> perpus
 
 
 app.listen(3000, function() {
