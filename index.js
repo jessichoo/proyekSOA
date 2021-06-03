@@ -3,8 +3,14 @@ const app         = express();
 const db        = require('./conn');
 const axios       = require('axios');
 
-
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+const user = require("./routes/user");
+const buku = require("./routes/buku");
+
+app.use("/api/user/", user);
+app.use("/api/buku/", buku);
 
 function autogen(input){
     var pad = "0000";
@@ -280,7 +286,6 @@ app.get("/api/books/detail/:id_buku", async (req, res) => {
 
 //delete buku
 //tambah peminjaman buku -> perpus
-
 
 app.listen(3000, function() {
     console.log("listen 3000");
