@@ -155,7 +155,8 @@ app.put("/api/perpus/updateBook/:id", async(req, res) => {
 app.post("/api/recharge/apihit", async(req,res)=>{
     let input = req.body;
     let conn = await db.getConn();
-    let cariUser = await db.executeQuery(conn, `SELECT * FORM user WHERE id_user = '${input.id_user}'` );
+    let cariUser = await db.executeQuery(conn, `SELECT * FROM user WHERE id_user = '${input.id_user}'` );
+    //console.log(cariUser);
     conn.release();
     if(!cariUser.length){
         return res.status(404).json({
@@ -224,7 +225,7 @@ app.get("/api/library/:city", async (req, res)=>{
 app.get("/api/library/books/:id_perpus", async(req,res)=>{
     let conn = await db.getConn();
     let result = await db.executeQuery(conn, `SELECT * FROM buku_perpus WHERE id_perpus = '${req.params.id_perpus}'`);
-    conn.release();
+    //console.log(result);
     if(!result.length){
         return res.status(404).json({
             message: 'Tidak ada buku yang terdaftar pada perpustakaan ini',
@@ -238,11 +239,11 @@ app.get("/api/library/books/:id_perpus", async(req,res)=>{
             try {
                 let val = await axios.get("https://www.googleapis.com/books/v1/volumes/" + buku.id_buku_api);
         
-                let result = val.data;
+                let result1 = val.data;
         
                 let data =  {
-                    id_buku: result.id,
-                    nama_buku: result.volumeInfo.title
+                    id_buku: result1.id,
+                    nama_buku: result1.volumeInfo.title
                 }
         
                 daftar.push(data); 
@@ -257,6 +258,8 @@ app.get("/api/library/books/:id_perpus", async(req,res)=>{
             status_code: 200,
         });
     }
+    conn.release();
+    
 });
 
 app.get("/api/books/detail/:id_buku", async (req, res) => {
