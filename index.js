@@ -174,6 +174,7 @@ app.post("/api/recharge/apihit", async(req,res)=>{
 
 app.get("/api/library/books/:judul", async(req,res)=>{
     let conn = await db.getConn();
+    
     conn.release();
 });
 
@@ -205,8 +206,42 @@ app.get("/api/library/:city", async (req, res)=>{
     conn.release();
 });
 
-app.get("/api/library/books/:id", async(req,res)=>{
-
+app.get("/api/library/books/:id_perpus", async(req,res)=>{
+    let conn = await db.getConn();
+    let result = await db.executeQuery(conn, `SELECT * FROM buku_perpus WHERE id_perpus = '${req.params.id_perpus}'`);
+    conn.release();
+    if(!result.length){
+        return res.status(404).json({
+            message: 'Tidak ada buku yang terdaftar pada perpustakaan ini',
+            status_code: 404
+        });
+    } else {
+        let daftar=[];
+        for (let i = 0; i < result.length; i++) {
+            conn = await db.getConn();
+            let buku = await db.executeQuery(conn, `SELECT * FROM buku WHERE id_buku = '${result[i].id_buku}'`);
+            try {
+                let val = await axios.get("https://www.googleapis.com/books/v1/volumes/" + buku.id_buku_api);
+        
+                let result = val.data;
+        
+                let data =  {
+                    id_buku: result.id,
+                    nama_buku: result.volumeInfo.title
+                }
+        
+                daftar.push(data); 
+            }
+            catch(error) {
+                console.log(error); 
+            }
+            conn.release();
+        }
+        return res.status(200).json({
+            daftar_buku:daftar,
+            status_code: 200,
+        });
+    }
 });
 
 //delete buku
