@@ -97,9 +97,9 @@ app.post("/api/perpus/addBook", async(req, res) => {
     }
     conn.release();
 
-    return res.status(200).json({
+    return res.status(201).json({
         message: 'Berhasil menambahkan buku ke dalam perpus',
-        status_code: 200
+        status_code: 201
     });
     
 });
@@ -129,13 +129,85 @@ app.put("/api/perpus/updateBook/:id", async(req, res) => {
 
     }else{
         return res.status(200).json({
-            message: 'Update stok buku berhasil',
+            message: 'Update buku berhasil',
+            status_code: 200
+        });
+    }
+    conn.release();
+
+});
+
+app.post("/api/recharge/apihit", async(req,res)=>{
+    let input = req.body;
+    let conn = await db.getConn();
+    let cariUser = await db.executeQuery(conn, `SELECT * FORM user WHERE id_user = '${input.id_user}'` );
+    conn.release();
+    if(!cariUser.length){
+        return res.status(404).json({
+            message: 'User tidak terdaftar',
+            status_code: 404
+        });
+    }
+    if(cariUser.saldo<10000){
+        return res.status(500).json({
+            message: 'Saldo anda tidak mencukupi',
             status_code: 500
         });
     }
 
+    conn = await db.getConn();
+    let tambah = await db.executeQuery(conn, `UPDATE user SET api_hit = api_hit+20, saldo = saldo - 10000  WHERE id_user = '${input.id_user}'`)
+    if (tambah.affectedRows === 0) {
+        return res.status(500).json({
+            message: 'Terjadi kesalahan pada server',
+            status_code: 500
+        });
+
+    }else{
+        return res.status(200).json({
+            message: 'Recharge API_hit berhasil',
+            status_code: 200
+        });
+    }
+    conn.release();
 });
 
+app.get("/api/library/books/:judul", async(req,res)=>{
+    let conn = await db.getConn();
+    conn.release();
+});
+
+app.get("/api/library/:city", async (req, res)=>{
+    let conn = await db.getConn();
+    let result = await db.executeQuery(conn, `SELECT * FROM user WHERE kota = '${req.params.city}'`);
+    if(!result.length){
+        return res.status(404).json({
+            message: 'Perpustakaan pada kota yang dimaksud tidak ditemukan',
+            status_code: 404
+        });
+    } else {
+        let listLibrary = [];
+        for (let i = 0; i < result.length; i++) {
+            const element = {
+                id:result[i].id_user,
+                nama_perpustakaan:result[i].nama,
+                alamat_perpustakaan:result[i].alamat,
+                kota:result[i].kota,
+                nomor_telp:result[i].no_telepon
+            };
+            listLibrary.push(element);
+        }
+        return res.status(200).json({
+            daftar:listLibrary ,
+            status_code: 200,
+        });
+    }
+    conn.release();
+});
+
+app.get("/api/library/books/:id", async(req,res)=>{
+
+});
 
 //delete buku
 //tambah peminjaman buku -> perpus
