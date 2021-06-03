@@ -1,0 +1,92 @@
+{
+	"info": {
+		"_postman_id": "cb81d720-cfbb-45b6-af6a-bba1e0a18db3",
+		"name": "bagian 3",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "cari perpus berdasarkan kota",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/api/library/:city",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"library",
+						":city"
+					],
+					"variable": [
+						{
+							"key": "city",
+							"value": "Malang"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "recharge api",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "id_user",
+							"value": "",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:3000/api/recharge/apihit",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"recharge",
+						"apihit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "cari daftar buku",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/api/library/books/:id_perpus",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"library",
+						"books",
+						":id_perpus"
+					],
+					"variable": [
+						{
+							"key": "id_perpus",
+							"value": "P001"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
