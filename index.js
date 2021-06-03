@@ -3,7 +3,7 @@ const app         = express();
 const db        = require('./conn');
 const axios       = require('axios');
 
-
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 function autogen(input){
@@ -100,7 +100,13 @@ app.put("/api/books/update/:id", async(req, res) => {
 
 });
 
+const user = require("./routes/user");
+const buku = require("./routes/buku");
 
+app.use("/api/user/", user);
+app.use("/api/buku/", buku);
+
+app.get('/', (req, res) => res.status(200).send('Online!'));
 
 app.listen(3000, function() {
     console.log("listen 3000");
