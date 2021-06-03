@@ -51,6 +51,8 @@ app.post("/api/books/add", async (req, res) => {
     var pad = "000";
     var str = result.length + 1 + "" ;
     var id = "B" + pad.substring(0, pad.length - str.length) + str;
+    
+    // arrHasil[0]["id"] = id;
 
     conn.release();
 
@@ -68,6 +70,7 @@ app.post("/api/books/add", async (req, res) => {
 
     return res.status(200).json({
         message: 'Berhasil menambahkan buku ke dalam database',
+        data: arrHasil,
         status_code: 200
     });
 });
@@ -96,14 +99,20 @@ app.post("/api/perpus/addBook", async(req, res) => {
         });
     }
     conn.release();
+    
+    let arrHasil = {
+        'id_buku' :input.id_buku,
+        'id_perpus' : input.id_perpus,
+        'stok' : input.stok
+    };
 
     return res.status(201).json({
         message: 'Berhasil menambahkan buku ke dalam perpus',
+        data: arrHasil,
         status_code: 201
     });
     
 });
-
 
 app.put("/api/perpus/updateBook/:id", async(req, res) => {
     let input = req.body;
@@ -242,6 +251,31 @@ app.get("/api/library/books/:id_perpus", async(req,res)=>{
             status_code: 200,
         });
     }
+});
+
+app.get("/api/books/detail/:id_buku", async (req, res) => {
+    let conn = await db.getConn();
+    let result = await db.executeQuery(conn, `SELECT * FROM buku WHERE id_buku = '${req.params.id_buku}'`);
+    if(!result.length){
+        return res.status(404).json({
+            message: 'Buku yang dimaksud tidak ditemukan',
+            status_code: 404
+        });
+    } else {
+        let listLibrary = [];
+        for (let i = 0; i < result.length; i++) {
+            const element = {
+                id_buku:result[i].id_buku,
+                judul_buku:result[i].judul_buku,
+            };
+            listLibrary.push(element);
+        }
+        return res.status(200).json({
+            daftar:listLibrary ,
+            status_code: 200,
+        });
+    }
+    conn.release();
 });
 
 //delete buku
