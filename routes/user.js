@@ -9,9 +9,7 @@ const storage=multer.diskStorage({
         callback(null,'./uploads');
     },
     filename:async function(req,file,callback){
-        console.log("upload");
         if (req.body.role.toUpperCase() == "U" || req.body.role.toUpperCase() == "P") {
-            console.log("upload1");
             let conn = await db.getConn();
             let query = await db.executeQuery(conn,
                 `SELECT LPAD(COUNT(*)+1, 3,'0') as count FROM user where role = '${req.body.role.toUpperCase()}'`
@@ -24,8 +22,7 @@ const storage=multer.diskStorage({
             callback(null,(file_name+'.'+extension));
         }
         else {
-            console.log("upload2");
-            callback(error = "Error: Role tidak valid");
+            callback("Error: Role tidak valid", null);
         }
     }
 });
@@ -35,40 +32,50 @@ function checkFileType(file,cb){
     const extname=filetypes.test(file.originalname.split('.')[file.originalname.split('.').length-1]);
     const mimetype=filetypes.test(file.mimetype);
     if(mimetype && extname){
-        return true;
+        return cb(null,true);
     }else{
-        return false;
+        return cb(error = 'Error: Bukan JPG/PNG');
     }
 }
 
 const upload=multer({
     storage:storage,
     fileFilter: function(req,file,cb){
-        // checkFileType(file, cb);
+        checkFileType(file, cb);
     }
 });
+
+function cekJwt(token) {
+    let user = [];
+    try {
+        user = jwt.verify(token, "proyeksoa");
+    } catch (error) {
+        user = null;
+    }
+    return user;
+}
 
 //register
 router.post('/register', upload.single("foto_ktp"), async (req, res) => {
     let input = req.body;
-    console.log(req.body);
     input.role = input.role.toUpperCase();
     let conn = await db.getConn();
     let query = await db.executeQuery(conn, `select * from user where username = '${input.username}'`);
 
-    console.log("tes1");
     if (query.length != 0) {
         conn.release();
-        return res.status(400).send("Username sudah terdaftar");
+        return res.status(400).send({
+            "Error": "Username sudah terdaftar"
+        });
     }
     else if (input.role != "U" && input.role != "P") {
         conn.release();
-        return res.status(400).send("Role tidak valid");
+        return res.status(400).send({
+            "Error": "Role tidak valid"
+        });
     }
 
-    console.log("tes2");
     if (input.role == "U") {
-        console.log("tes3");
         // if (input.username == null || input.password == null || input.nama == null) {
         //     return res.status(400).send("Input tidak lengkap");
         // }
@@ -90,7 +97,6 @@ router.post('/register', upload.single("foto_ktp"), async (req, res) => {
         }
     }
     else if (input.role = "P") {
-        console.log("tes4");
         // if (input.username == null || input.password == null || input.nama == null || input.alamat == null || input.kota == null || input.no_telepon == null) {
         //     return res.status(400).send("Input tidak lengkap");
         // }
@@ -117,13 +123,108 @@ router.post('/register', upload.single("foto_ktp"), async (req, res) => {
 });
 
 //login
-router.post('/login', (req, res) => {
+router.post('/login', async (req, res) => {
+    let input = req.body;
+    let conn = await db.getConn();
+    let query = await db.executeQuery(conn, `select * from user where username = '${input.username}'`);
+    conn.release();
+    if (query.length == 0) {
+        return res.status(404).send({
+            "Error": "Username tidak terdaftar"
+        });
+    }
+    else if (query[0].password != input.password) {
+        return res.status(400).send({
+            "Error": "Password salah"
+        });
+    }
 
+    let user = query[0];
+    let role = "";
+
+    switch (user.role) {
+        case "P":
+            role = "Perpustakaan";
+            break;
+        default:
+            role = "User";
+            break;
+    }
+    const token = jwt.sign({
+        "id_user": user.id_user,
+        "username": user.username,
+        "nama": user.nama,
+        "role": user.role
+    }, "proyeksoa");
+
+    return res.status(200).send({
+        "username": user.username,
+        "nama": user.nama,
+        "role": role,
+        "token": token
+    });
 });
 
-router.post('/tes', async (req, res) => {
-    console.log(req.body);
-    return res.status(200).send(req.body.tes);
+//update user
+router.put("/update", async (req, res) => {
+    //cek jwt token
+    let user = cekJwt(req.header("x-auth-token"));
+    if (user == null) {
+        return res.status(401).send({
+            "Error": "Token Invalid"
+        });
+    }
+    ////////////////////
+
+    let input = req.body;
+    let conn = await db.getConn();
+    let query = await db.executeQuery(conn, `select * from user where username = '${user.username}'`);
+    let updated = {};
+
+    switch (user.role) {
+        case "P":
+            updated = {
+                "username": user.username,
+                "password": query[0].password,
+                "nama": query[0].nama,
+                "alamat": query[0].alamat,
+                "kota": query[0].kota,
+                "no_telepon": query[0].no_telepon,
+                "role": "Perpustakaan"
+            };
+            break;
+        default:
+            updated = {
+                "username": user.username,
+                "password": query[0].password,
+                "nama": query[0].nama,
+                "role": "User"
+            };
+            break;
+    }
+
+    if (input.no_telepon != "" && input.no_telepon != null) {
+        if (user.role == "P") {
+            query = await db.executeQuery(conn, `update user set no_telepon = '${input.no_telepon}' where username = '${user.username}'`);
+            updated.no_telepon = input.no_telepon;
+        }
+        else {
+            return res.status(400).send({
+                "Error": 'Role tidak sesuai'
+            });
+        }
+    }
+    if (input.password != "" && input.password != null) {
+        query = await db.executeQuery(conn, `update user set password = '${input.password}' where username = '${user.username}'`);
+        updated.password = input.password;
+    }
+    if (input.nama != "" && input.nama != null) {
+        query = await db.executeQuery(conn, `update user set nama = '${input.nama}' where username = '${user.username}'`);
+        updated.nama = input.nama;
+    }
+    conn.release();
+
+    return res.status(200).send(updated);
 });
 
 module.exports = router;
