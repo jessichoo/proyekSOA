@@ -106,15 +106,15 @@ app.post("/api/perpus/addBook", async(req, res) => {
     }
     conn.release();
     
-    let arrHasil = {
-        'id_buku' :input.id_buku,
-        'id_perpus' : input.id_perpus,
-        'stok' : input.stok
-    };
+    // let arrHasil = {
+    //     'id_buku' :input.id_buku,
+    //     'id_perpus' : input.id_perpus,
+    //     'stok' : input.stok
+    // };
 
     return res.status(201).json({
         message: 'Berhasil menambahkan buku ke dalam perpus',
-        data: arrHasil,
+        data: input,
         status_code: 201
     });
     
@@ -123,7 +123,7 @@ app.post("/api/perpus/addBook", async(req, res) => {
 app.put("/api/perpus/updateBook/:id", async(req, res) => {
     let input = req.body;
     let conn= await db.getConn();
-    let result= await db.executeQuery(conn, `SELECT * FROM buku_perpus WHERE id_buku = '${req.params.id}' AND id_perpus = '${req.body.id_perpus}'`);
+    let result= await db.executeQuery(conn, `SELECT * FROM buku_perpus WHERE id_buku = '${req.params.id}' AND id_perpus = '${input.id_perpus}'`);
     if (result.length == 0) {
         return res.status(404).json({
             message: 'Buku tidak terdaftar terdaftar di perpustakaan',
@@ -134,7 +134,7 @@ app.put("/api/perpus/updateBook/:id", async(req, res) => {
     conn.release();
 
     conn= await db.getConn();
-    result= await db.executeQuery(conn, `UPDATE buku_perpus set stok = '${input.stok}' where id_buku = '${req.params.id}' AND id_perpus = '${req.body.id_perpus}'`);
+    result= await db.executeQuery(conn, `UPDATE buku_perpus set stok = '${input.stok}' where id_buku = '${req.params.id}' AND id_perpus = '${input.id_perpus}'`);
     console.log(result);
     if (result.affectedRows === 0) {
         return res.status(500).json({
@@ -144,7 +144,12 @@ app.put("/api/perpus/updateBook/:id", async(req, res) => {
 
     }else{
         return res.status(200).json({
-            message: 'Update buku berhasil',
+            message: 'Update stok buku berhasil',
+            data:{
+                "id_perpus" : input.id_perpus,
+                "stok" : input.stok,
+                "id_buku" : req.params.id
+            },
             status_code: 200
         });
     }
@@ -152,10 +157,32 @@ app.put("/api/perpus/updateBook/:id", async(req, res) => {
 
 });
 
+app.post('/api/user/topup', async (req,res)=>{
+    let conn = await db.getConn();
+    let result = await db.executeQuery(conn, `SELECT * FROM user WHERE username = '${req.body.username}'`);
+    if(result.length !=0){
+        saldo = parseInt(req.body.saldo)+parseInt(result[0].saldo)
+        result = await db.executeQuery(conn, `update user set saldo='${saldo}' WHERE username = '${req.body.username}'`);
+        result = await db.executeQuery(conn, `SELECT * FROM user WHERE username = '${req.body.username}'`);
+        delete result[0].password
+        return res.status(200).send({
+            "status":200,
+            "data":result[0]
+        })
+        
+    }else{
+        return res.status(400).send({
+            "message":"User Tidak Ditemukan"
+        })
+    }
+    conn.release();
+
+})
+
 app.post("/api/recharge/apihit", async(req,res)=>{
     let input = req.body;
     let conn = await db.getConn();
-    let cariUser = await db.executeQuery(conn, `SELECT * FORM user WHERE id_user = '${input.id_user}'` );
+    let cariUser = await db.executeQuery(conn, `SELECT * FROM user WHERE id_user = '${input.id_user}'` );
     conn.release();
     if(!cariUser.length){
         return res.status(404).json({
