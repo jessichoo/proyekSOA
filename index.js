@@ -12,11 +12,11 @@ const buku = require("./routes/buku");
 app.use("/api/user/", user);
 app.use("/api/buku/", buku);
 
-function autogen(input){
-    var pad = "0000";
-    var str = input + 1 + "" ;
-    var hasil = " "+pad.substring(0, pad.length - str.length) + str;
-}
+// function autogen(input){
+//     var pad = "0000";
+//     var str = input + 1 + "" ;
+//     var hasil = " "+pad.substring(0, pad.length - str.length) + str;
+// }
 
 app.post("/api/books/add", async (req, res) => {
     const input = req.body;
@@ -81,81 +81,7 @@ app.post("/api/books/add", async (req, res) => {
     });
 });
 
-app.post("/api/perpus/addBook", async(req, res) => {
-    let input = req.body;
-    console.log(input);
-    
-    let conn= await db.getConn();
-    let result= await db.executeQuery(conn, `SELECT * FROM buku_perpus WHERE id_perpus = '${input.id_perpus}' AND id_buku = '${input.id_buku}'`);
-    if (result.length) {
-        return res.status(409).json({
-            message: 'Buku sudah terdaftar di perpustakaan',
-            status_code: 409
-        });
-    }
 
-    conn.release();
-
-    conn= await db.getConn();
-    result= await db.executeQuery(conn, `INSERT INTO buku_perpus VALUES ('${input.id_buku}', '${input.id_perpus}', '${input.stok}')`);
-    if (result.affectedRows === 0) {
-        return res.status(500).json({
-            message: 'Terjadi kesalahan pada server',
-            status_code: 500
-        });
-    }
-    conn.release();
-    
-    // let arrHasil = {
-    //     'id_buku' :input.id_buku,
-    //     'id_perpus' : input.id_perpus,
-    //     'stok' : input.stok
-    // };
-
-    return res.status(201).json({
-        message: 'Berhasil menambahkan buku ke dalam perpus',
-        data: input,
-        status_code: 201
-    });
-    
-});
-
-app.put("/api/perpus/updateBook/:id", async(req, res) => {
-    let input = req.body;
-    let conn= await db.getConn();
-    let result= await db.executeQuery(conn, `SELECT * FROM buku_perpus WHERE id_buku = '${req.params.id}' AND id_perpus = '${input.id_perpus}'`);
-    if (result.length == 0) {
-        return res.status(404).json({
-            message: 'Buku tidak terdaftar terdaftar di perpustakaan',
-            status_code: 404
-        });   
-    }
-
-    conn.release();
-
-    conn= await db.getConn();
-    result= await db.executeQuery(conn, `UPDATE buku_perpus set stok = '${input.stok}' where id_buku = '${req.params.id}' AND id_perpus = '${input.id_perpus}'`);
-    console.log(result);
-    if (result.affectedRows === 0) {
-        return res.status(500).json({
-            message: 'Terjadi kesalahan pada server',
-            status_code: 500
-        });
-
-    }else{
-        return res.status(200).json({
-            message: 'Update stok buku berhasil',
-            data:{
-                "id_perpus" : input.id_perpus,
-                "stok" : input.stok,
-                "id_buku" : req.params.id
-            },
-            status_code: 200
-        });
-    }
-    conn.release();
-
-});
 
 app.post('/api/user/topup', async (req,res)=>{
     let conn = await db.getConn();

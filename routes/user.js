@@ -3,6 +3,7 @@ const router = express.Router();
 const db = require('../conn');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
+const axios = require('axios');
 
 const storage=multer.diskStorage({
     destination:function(req,file,callback){
@@ -227,4 +228,76 @@ router.put("/update", async (req, res) => {
     return res.status(200).send(updated);
 });
 
+//tambah bookshelf
+router.post("/bookshelf/add", async(req, res) => {
+    let input = req.body; let data = [];
+    try {
+        let val = await axios.get("https://www.googleapis.com/books/v1/volumes/" + input.id_buku);
+        let result = val.data; 
+        data.push({
+            id_buku: result.id,
+            nama_buku: result.volumeInfo.title
+        });
+    }catch(error) {
+        // console.log(error);
+        return res.status(404).json({
+            message: 'ID buku tidak dikenal',
+            status_code: 404
+        });
+    }
+
+    let conn= await db.getConn();
+    let result= await db.executeQuery(conn, `SELECT * FROM bookshelf WHERE id_user= '${input.id_user}' AND id_buku = '${input.id_buku}'`);
+    if (result.length){
+        return res.status(409).json({
+            message: 'Buku sudah pernah ditambahkan ke bookshelf user',
+            status_code: 409
+        });   
+    }
+
+    conn.release();
+
+    conn= await db.getConn();
+    result= await db.executeQuery(conn, `INSERT INTO bookshelf VALUES ('${input.id_buku}', '${input.id_user}')`);
+    if (result.affectedRows === 0) {
+        return res.status(500).json({
+            message: 'Terjadi kesalahan pada server',
+            status_code: 500
+        });
+    }
+
+    conn.release();
+
+    return res.status(201).json({
+        message: `Buku berjudul '${data[0].nama_buku}' berhasil ditambahkan ke bookshelf user`,
+        data: input,
+        status_code: 201
+    });
+
+});
+
+//lihat bookshelf
+router.get("/bookshelf/:id_user", async(req, res) => {
+    let input = req.body; let dataBuku = [];
+
+    let conn= await db.getConn();
+    let listBookshelf= await db.executeQuery(conn, `SELECT * FROM bookshelf WHERE id_user= '${req.params.id_user}'`);
+    if (!listBookshelf.length){
+        return res.status(409).json({
+            message: 'Data Bookshelf tidak tersedia',
+            status_code: 409
+        });   
+    }
+
+    conn.release();
+    
+    // listBookshelf.forEach(element => {
+    // });
+    return res.status(201).json({
+        message: `Data bookshelf berhasil di load`,
+        bookshelf: hasil,
+        status_code: 201
+    });
+    
+});
 module.exports = router;
