@@ -228,7 +228,7 @@ router.put("/update", async (req, res) => {
     return res.status(200).send(updated);
 });
 
-//tambah bookshelf
+//tambah bookshelf -> ini isa ganti tambah request sih cmn kalo req isine kyk sing di tabel
 router.post("/bookshelf/add", async(req, res) => {
     let input = req.body; let data = [];
     try {
