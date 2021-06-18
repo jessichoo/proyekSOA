@@ -3,14 +3,20 @@ const app         = express();
 const db        = require('./conn');
 const axios       = require('axios');
 
-
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-function autogen(input){
-    var pad = "0000";
-    var str = input + 1 + "" ;
-    var hasil = " "+pad.substring(0, pad.length - str.length) + str;
-}
+const user = require("./routes/user");
+const buku = require("./routes/buku");
+
+app.use("/api/user/", user);
+app.use("/api/buku/", buku);
+
+// function autogen(input){
+//     var pad = "0000";
+//     var str = input + 1 + "" ;
+//     var hasil = " "+pad.substring(0, pad.length - str.length) + str;
+// }
 
 app.post("/api/books/add", async (req, res) => {
     const input = req.body;
@@ -51,6 +57,8 @@ app.post("/api/books/add", async (req, res) => {
     var pad = "000";
     var str = result.length + 1 + "" ;
     var id = "B" + pad.substring(0, pad.length - str.length) + str;
+    
+    // arrHasil[0]["id"] = id;
 
     conn.release();
 
@@ -68,79 +76,41 @@ app.post("/api/books/add", async (req, res) => {
 
     return res.status(200).json({
         message: 'Berhasil menambahkan buku ke dalam database',
+        data: arrHasil,
         status_code: 200
     });
 });
 
-app.post("/api/perpus/addBook", async(req, res) => {
-    let input = req.body;
-    console.log(input);
-    
-    let conn= await db.getConn();
-    let result= await db.executeQuery(conn, `SELECT * FROM buku_perpus WHERE id_perpus = '${input.id_perpus}' AND id_buku = '${input.id_buku}'`);
-    if (result.length) {
-        return res.status(409).json({
-            message: 'Buku sudah terdaftar di perpustakaan',
-            status_code: 409
-        });
-    }
-
-    conn.release();
-
-    conn= await db.getConn();
-    result= await db.executeQuery(conn, `INSERT INTO buku_perpus VALUES ('${input.id_buku}', '${input.id_perpus}', '${input.stok}')`);
-    if (result.affectedRows === 0) {
-        return res.status(500).json({
-            message: 'Terjadi kesalahan pada server',
-            status_code: 500
-        });
-    }
-    conn.release();
-
-    return res.status(201).json({
-        message: 'Berhasil menambahkan buku ke dalam perpus',
-        status_code: 201
-    });
-    
-});
 
 
-app.put("/api/perpus/updateBook/:id", async(req, res) => {
-    let input = req.body;
-    let conn= await db.getConn();
-    let result= await db.executeQuery(conn, `SELECT * FROM buku_perpus WHERE id_buku = '${req.params.id}' AND id_perpus = '${req.body.id_perpus}'`);
-    if (result.length == 0) {
-        return res.status(404).json({
-            message: 'Buku tidak terdaftar terdaftar di perpustakaan',
-            status_code: 404
-        });   
-    }
-
-    conn.release();
-
-    conn= await db.getConn();
-    result= await db.executeQuery(conn, `UPDATE buku_perpus set stok = '${input.stok}' where id_buku = '${req.params.id}' AND id_perpus = '${req.body.id_perpus}'`);
-    console.log(result);
-    if (result.affectedRows === 0) {
-        return res.status(500).json({
-            message: 'Terjadi kesalahan pada server',
-            status_code: 500
-        });
-
+app.post('/api/user/topup', async (req,res)=>{
+    let conn = await db.getConn();
+    let result = await db.executeQuery(conn, `SELECT * FROM user WHERE username = '${req.body.username}'`);
+    if(result.length !=0){
+        saldo = parseInt(req.body.saldo)+parseInt(result[0].saldo)
+        result = await db.executeQuery(conn, `update user set saldo='${saldo}' WHERE username = '${req.body.username}'`);
+        result = await db.executeQuery(conn, `SELECT * FROM user WHERE username = '${req.body.username}'`);
+        delete result[0].password
+        return res.status(200).send({
+            "status":200,
+            "data":result[0]
+        })
+        
     }else{
-        return res.status(200).json({
-            message: 'Update buku berhasil',
-            status_code: 200
-        });
+        return res.status(400).send({
+            "message":"User Tidak Ditemukan"
+        })
     }
     conn.release();
 
-});
+})
 
+//recharge api hit
 app.post("/api/recharge/apihit", async(req,res)=>{
     let input = req.body;
     let conn = await db.getConn();
-    let cariUser = await db.executeQuery(conn, `SELECT * FORM user WHERE id_user = '${input.id_user}'` );
+    let cariUser = await db.executeQuery(conn, `SELECT * FROM user WHERE id_user = '${input.id_user}'` );
+    //console.log(cariUser);
     conn.release();
     if(!cariUser.length){
         return res.status(404).json({
@@ -201,28 +171,45 @@ app.get("/api/buku/:id_buku", async (req, res) => {
     }
     conn.release();
 });
-app.get("/api/library/:city", async (req, res)=>{
+//lihat toko yang menyediakan buku
+app.get("/api/toko/daftarbuku/:judul", async(req,res)=>{
     let conn = await db.getConn();
-    let result = await db.executeQuery(conn, `SELECT * FROM user WHERE kota = '${req.params.city}'`);
-    if(!result.length){
+    let idBuku = await db.executeQuery(conn,`SELECT id FROM buku WHERE judul = '${req.params.judul}'`);
+    if(!idBuku.length){
         return res.status(404).json({
-            message: 'Perpustakaan pada kota yang dimaksud tidak ditemukan',
+            message: 'Buku yang anda cari tidak ditemukan',
             status_code: 404
         });
     } else {
-        let listLibrary = [];
-        for (let i = 0; i < result.length; i++) {
-            const element = {
-                id:result[i].id_user,
-                nama_perpustakaan:result[i].nama,
-                alamat_perpustakaan:result[i].alamat,
-                kota:result[i].kota,
-                nomor_telp:result[i].no_telepon
-            };
-            listLibrary.push(element);
+        let daftarPerpus=[];
+        conn = await db.getConn();
+        let idToko = await db.executeQuery(conn,`SELECT * FROM buku_perpus WHERE id_buku = '${idBuku}'`);
+        if(!idToko.length){
+            return res.status(404).json({
+                message: 'Tidak ada toko yang menyediakan buku ini',
+                status_code: 404
+            });
+        }
+        for (let i = 0; i < idToko.length; i++) {
+            daftarPerpus.push(idToko[i].id_perpus);
+        }
+        conn.release();
+
+        let daftarToko = [];
+        for (let i = 0; i < daftarPerpus.length; i++) {
+            conn = await db.getConn();
+            let tempToko = await db.executeQuery(conn, `SELECT * FROM user WHERE id_user = '${daftarPerpus[i]}'`);
+            const data =  {
+                id_toko: tempToko[0].id_user,
+                nama_toko: tempToko[0].nama,
+                alamat_toko: tempToko[0].alamat,
+                kota: tempToko[0].kota,
+                no_telp:tempToko[0].no_telepon
+            }
+            daftarToko.push(data);
         }
         return res.status(200).json({
-            daftar:listLibrary ,
+            daftar_toko:daftarToko,
             status_code: 200,
         });
     }
@@ -248,14 +235,15 @@ app.post('/api/user/topup', async (req,res)=>{
     }
     conn.release();
 
-})
-app.get("/api/library/books/:id_perpus", async(req,res)=>{
+});
+//lihat buku yang terdaftar pada toko
+app.get("/api/toko/books/:id_toko", async(req,res)=>{
     let conn = await db.getConn();
-    let result = await db.executeQuery(conn, `SELECT * FROM buku_perpus WHERE id_perpus = '${req.params.id_perpus}'`);
-    conn.release();
+    let result = await db.executeQuery(conn, `SELECT * FROM buku_perpus WHERE id_perpus = '${req.params.id_toko}'`);
+    //console.log(result);
     if(!result.length){
         return res.status(404).json({
-            message: 'Tidak ada buku yang terdaftar pada perpustakaan ini',
+            message: 'Tidak ada buku yang terdaftar pada toko ini',
             status_code: 404
         });
     } else {
@@ -263,21 +251,11 @@ app.get("/api/library/books/:id_perpus", async(req,res)=>{
         for (let i = 0; i < result.length; i++) {
             conn = await db.getConn();
             let buku = await db.executeQuery(conn, `SELECT * FROM buku WHERE id_buku = '${result[i].id_buku}'`);
-            try {
-                let val = await axios.get("https://www.googleapis.com/books/v1/volumes/" + buku.id_buku_api);
-        
-                let result = val.data;
-        
-                let data =  {
-                    id_buku: result.id,
-                    nama_buku: result.volumeInfo.title
-                }
-        
-                daftar.push(data); 
+            const data =  {
+                id_buku: buku[0].id_buku,
+                nama_buku: buku[0].judul_buku
             }
-            catch(error) {
-                console.log(error); 
-            }
+            daftar.push(data);
             conn.release();
         }
         return res.status(200).json({
@@ -285,11 +263,68 @@ app.get("/api/library/books/:id_perpus", async(req,res)=>{
             status_code: 200,
         });
     }
+    conn.release();
+    
+});
+
+//lihat preview buku
+app.get("api/books/preview/:judul", async (req,res)=>{
+    if(!token){
+        return res.status(401).send({"msg":"token tidak ditemukan!"});
+    }
+
+    let user={};
+    try {
+        user = jwt.verify(token,"proyeksoa");
+    } catch (error) {
+        return res.status(401).send({"msg":"token tidak valid!"});
+    }
+    
+    let today = new Date();
+    let date = "";
+    if((today.getMonth()+1) < 10 && today.getDate() < 10){
+        date = today.getFullYear()+'-0'+(today.getMonth()+1)+'-0'+today.getDate();
+    } else if ((today.getMonth()+1) < 10) {
+        date = today.getFullYear()+'-0'+(today.getMonth()+1)+'-'+today.getDate();
+    } else if (today.getDate() < 10){
+        date = today.getFullYear()+'-'+(today.getMonth()+1)+'-0'+today.getDate();
+    } else {
+        date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+    }
+    
+    let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    let dateTime = date+' '+time;
+
+    let inputLog = await executeQuery(`INSERT INTO access_log VALUES (null, '${user.id_user}','${dateTime}')`);
+})
+
+app.get("/api/books/detail/:id_buku", async (req, res) => {
+    let conn = await db.getConn();
+    let result = await db.executeQuery(conn, `SELECT * FROM buku WHERE id_buku = '${req.params.id_buku}'`);
+    if(!result.length){
+        return res.status(404).json({
+            message: 'Buku yang dimaksud tidak ditemukan',
+            status_code: 404
+        });
+    } else {
+        let listLibrary = [];
+        for (let i = 0; i < result.length; i++) {
+            const element = {
+                id_buku:result[i].id_buku,
+                judul_buku:result[i].judul_buku,
+            };
+            listLibrary.push(element);
+        }
+        return res.status(200).json({
+            daftar:listLibrary ,
+            status_code: 200,
+        });
+    }
+    conn.release();
 });
 
 //delete buku
 //tambah peminjaman buku -> perpus
-
 
 app.listen(3000, function() {
     console.log("listen 3000");
