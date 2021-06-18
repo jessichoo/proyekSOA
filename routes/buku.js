@@ -84,7 +84,7 @@ router.post("/add", async(req, res) => {
     let result= await db.executeQuery(conn, `SELECT * FROM buku WHERE id = '${input.id_buku}'`);
     if (!result.length) {
         let conn2= await db.getConn();
-        let result2= await db.executeQuery(conn2, `INSERT INTO buku VALUES ('${input.id_buku}','${dataBuku[0].nama_buku}', '${dataBuku[0].author}', '${dataBuku[0].tahun}', '${dataBuku[0].genre}')`);
+        let result2= await db.executeQuery(conn2, `INSERT INTO buku VALUES ('${input.id_buku}','${dataBuku[0].nama_buku}', '${dataBuku[0].author}', '${dataBuku[0].tahun}', '${dataBuku[0].genre}','0')`);
         if (result2.affectedRows === 0) {
             return res.status(500).json({
                 message: 'Terjadi kesalahan pada server',
@@ -131,7 +131,58 @@ router.post("/add", async(req, res) => {
     });
     
 });
+router.get("/dummy", async(req, res) => {
+    let conn= await db.getConn();
+    let val = await axios.get("https://www.googleapis.com/books/v1/volumes?&q=isbn=9786023857456");
+    let result = val.data.items; 
+    for (const e of result) {
+        let random = Math.floor(Math.random() * 20);
+        await db.executeQuery(conn, `INSERT INTO buku VALUES ('${e.id}','${e.volumeInfo.title}', '${e.volumeInfo.authors[0]}', '${e.volumeInfo.publishedDate}', '${e.volumeInfo.categories[0]}','${random}')`);
+    }
+    conn.release();
+    return res.status(200).json(result);   
+})
+//lihat daftar buku by author dan genre
+router.get("/daftar_buku", async(req, res) => {
+    req.query.genre = req.query.genre || "";
+    req.query.author = req.query.author || "";
+    req.query.judul = req.query.judul || "";
+    let author=`where author like '%${req.query.author}%' and genre like '%${req.query.genre}%' and judul like '%${req.query.judul}%'`;
+    console.log(author)
+    let conn= await db.getConn();
+    let result= await db.executeQuery(conn, `SELECT * FROM buku ${author}`);
+    conn.release();
+    return res.status(200).json(result);   
+})
+//lihat detail buku
+router.get("/detail_buku", async(req, res) => {
+    let id=req.body.id;
+    let conn= await db.getConn();
+    let result= await db.executeQuery(conn, `SELECT * FROM buku where id='${id}'`);
+    conn.release();
+    if(result.length==0){
+        return res.status(500).json({
+            message: 'Id buku tidak ditemukan',
+            status_code: 500
+        });
+    }else{
+        return res.status(200).json(result);         
+    }
+  
+})
+router.get("/best_seller", async(req, res) => {
+    let limit="";
+    if(req.query.limit){
+        limit=`LIMIT ${req.query.limit}`
+    }
+    
+    let conn= await db.getConn();
+    let result= await db.executeQuery(conn, `SELECT judul,author,tahun,genre FROM buku order by preview desc ${limit}`);
+    console.log(result)
+    conn.release();
+    return res.status(200).json(result);   
 
+})
 // perpus mengubah status suatu buku: 1(aktif), 0(non-aktif)
 router.put("/update", async(req, res) => {
     let input = req.body;
