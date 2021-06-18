@@ -174,7 +174,7 @@ app.get("/api/buku/:id_buku", async (req, res) => {
 //lihat toko yang menyediakan buku
 app.get("/api/toko/daftarbuku/:judul", async(req,res)=>{
     let conn = await db.getConn();
-    let idBuku = await db.executeQuery(conn,`SELECT id FROM buku WHERE judul = '${req.params.judul}'`);
+    let idBuku = await db.executeQuery(conn,`SELECT * FROM buku WHERE judul = '${req.params.judul}'`);
     if(!idBuku.length){
         return res.status(404).json({
             message: 'Buku yang anda cari tidak ditemukan',
@@ -183,7 +183,7 @@ app.get("/api/toko/daftarbuku/:judul", async(req,res)=>{
     } else {
         let daftarPerpus=[];
         conn = await db.getConn();
-        let idToko = await db.executeQuery(conn,`SELECT * FROM buku_perpus WHERE id_buku = '${idBuku}'`);
+        let idToko = await db.executeQuery(conn,`SELECT * FROM buku_perpus WHERE id_buku = '${idBuku[0].id}'`);
         if(!idToko.length){
             return res.status(404).json({
                 message: 'Tidak ada toko yang menyediakan buku ini',
@@ -238,6 +238,7 @@ app.post('/api/user/topup', async (req,res)=>{
 });
 //lihat buku yang terdaftar pada toko
 app.get("/api/toko/books/:id_toko", async(req,res)=>{
+    let daftar=[];
     let conn = await db.getConn();
     let result = await db.executeQuery(conn, `SELECT * FROM buku_perpus WHERE id_perpus = '${req.params.id_toko}'`);
     //console.log(result);
@@ -247,13 +248,15 @@ app.get("/api/toko/books/:id_toko", async(req,res)=>{
             status_code: 404
         });
     } else {
-        let daftar=[];
         for (let i = 0; i < result.length; i++) {
             conn = await db.getConn();
-            let buku = await db.executeQuery(conn, `SELECT * FROM buku WHERE id_buku = '${result[i].id_buku}'`);
+            let buku = await db.executeQuery(conn, `SELECT * FROM buku WHERE id = '${result[i].id_buku}'`);
             const data =  {
-                id_buku: buku[0].id_buku,
-                nama_buku: buku[0].judul_buku
+                id_buku: buku[0].id,
+                nama_buku: buku[0].judul,
+                author:buku[0].author,
+                genre:buku[0].genre,
+                tahun:buku[0].tahun
             }
             daftar.push(data);
             conn.release();
@@ -268,17 +271,29 @@ app.get("/api/toko/books/:id_toko", async(req,res)=>{
 });
 
 //lihat preview buku
-app.get("api/books/preview/:judul", async (req,res)=>{
-    if(!token){
-        return res.status(401).send({"msg":"token tidak ditemukan!"});
-    }
+app.get("/api/books/preview/:judul", async (req,res)=>{
+    // if(!token){
+    //     return res.status(401).send({"msg":"token tidak ditemukan!"});
+    // }
 
-    let user={};
-    try {
-        user = jwt.verify(token,"proyeksoa");
-    } catch (error) {
-        return res.status(401).send({"msg":"token tidak valid!"});
-    }
+    // let user={};
+    // try {
+    //     user = jwt.verify(token,"proyeksoa");
+    // } catch (error) {
+    //     return res.status(401).send({"msg":"token tidak valid!"});
+    // }
+
+    let judul = req.params.judul;
+    let search = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${judul}&key=AIzaSyCh9du1IyImJP4TjJ2Qj6wasDMvhsz0RlI`);
+    let result = search.data.items;
+    let hasil = [];
+    result.forEach(element => {
+        console.log(element);
+        let buku={
+            "preview_link" :element.accessInfo.webReaderLink
+        };
+        hasil.push(buku);
+    });
     
     let today = new Date();
     let date = "";
@@ -295,7 +310,14 @@ app.get("api/books/preview/:judul", async (req,res)=>{
     let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
     let dateTime = date+' '+time;
 
-    let inputLog = await executeQuery(`INSERT INTO access_log VALUES (null, '${user.id_user}','${dateTime}')`);
+    // let inputLog = await executeQuery(`INSERT INTO access_log VALUES (null, '${user.id_user}','${dateTime}')`);
+
+    console.log(hasil);
+    return res.status(200).json({
+        link_preview:hasil[0],
+        status_code: 200,
+    });
+
 })
 
 app.get("/api/books/detail/:id_buku", async (req, res) => {
