@@ -177,7 +177,30 @@ app.get("/api/library/books/:judul", async(req,res)=>{
     
     conn.release();
 });
-
+app.get("/api/buku/:id_buku", async (req, res) => {
+    let conn = await db.getConn();
+    let result = await db.executeQuery(conn, `SELECT * FROM buku WHERE id_buku = '${req.params.id_buku}'`);
+    if(!result.length){
+        return res.status(404).json({
+            message: 'Buku yang dimaksud tidak ditemukan',
+            status_code: 404
+        });
+    } else {
+        let listLibrary = [];
+        for (let i = 0; i < result.length; i++) {
+            const element = {
+                id_buku:result[i].id_buku,
+                judul_buku:result[i].judul_buku,
+            };
+            listLibrary.push(element);
+        }
+        return res.status(200).json({
+            daftar:listLibrary ,
+            status_code: 200,
+        });
+    }
+    conn.release();
+});
 app.get("/api/library/:city", async (req, res)=>{
     let conn = await db.getConn();
     let result = await db.executeQuery(conn, `SELECT * FROM user WHERE kota = '${req.params.city}'`);
@@ -205,7 +228,27 @@ app.get("/api/library/:city", async (req, res)=>{
     }
     conn.release();
 });
+app.post('/api/user/topup', async (req,res)=>{
+    let conn = await db.getConn();
+    let result = await db.executeQuery(conn, `SELECT * FROM user WHERE username = '${req.body.username}'`);
+    if(result.length !=0){
+        saldo = parseInt(req.body.saldo)+parseInt(result[0].saldo)
+        result = await db.executeQuery(conn, `update user set saldo='${saldo}' WHERE username = '${req.body.username}'`);
+        result = await db.executeQuery(conn, `SELECT * FROM user WHERE username = '${req.body.username}'`);
+        delete result[0].password
+        return res.status(200).send({
+            "status":200,
+            "data":result[0]
+        })
+        
+    }else{
+        return res.status(400).send({
+            "message":"User Tidak Ditemukan"
+        })
+    }
+    conn.release();
 
+})
 app.get("/api/library/books/:id_perpus", async(req,res)=>{
     let conn = await db.getConn();
     let result = await db.executeQuery(conn, `SELECT * FROM buku_perpus WHERE id_perpus = '${req.params.id_perpus}'`);
