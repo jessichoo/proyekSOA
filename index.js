@@ -221,7 +221,33 @@ app.get("/api/toko/books/:id_toko", async(req,res)=>{
 
 //lihat preview buku
 app.get("api/books/preview/:judul", async (req,res)=>{
+    if(!token){
+        return res.status(401).send({"msg":"token tidak ditemukan!"});
+    }
+
+    let user={};
+    try {
+        user = jwt.verify(token,"proyeksoa");
+    } catch (error) {
+        return res.status(401).send({"msg":"token tidak valid!"});
+    }
     
+    let today = new Date();
+    let date = "";
+    if((today.getMonth()+1) < 10 && today.getDate() < 10){
+        date = today.getFullYear()+'-0'+(today.getMonth()+1)+'-0'+today.getDate();
+    } else if ((today.getMonth()+1) < 10) {
+        date = today.getFullYear()+'-0'+(today.getMonth()+1)+'-'+today.getDate();
+    } else if (today.getDate() < 10){
+        date = today.getFullYear()+'-'+(today.getMonth()+1)+'-0'+today.getDate();
+    } else {
+        date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+    }
+    
+    let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    let dateTime = date+' '+time;
+
+    let inputLog = await executeQuery(`INSERT INTO access_log VALUES (null, '${user.id_user}','${dateTime}')`);
 })
 
 app.get("/api/books/detail/:id_buku", async (req, res) => {

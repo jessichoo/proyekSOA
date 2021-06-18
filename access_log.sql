@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Waktu pembuatan: 17 Jun 2021 pada 12.58
+-- Waktu pembuatan: 18 Jun 2021 pada 10.13
 -- Versi server: 10.4.11-MariaDB
 -- Versi PHP: 7.4.2
 
@@ -21,8 +21,6 @@ SET time_zone = "+00:00";
 --
 -- Database: `db_proyek_soa`
 --
-CREATE DATABASE IF NOT EXISTS `db_proyek_soa` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE `db_proyek_soa`;
 
 -- --------------------------------------------------------
 
