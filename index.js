@@ -2,6 +2,7 @@ const express = require('express');
 const app         = express();
 const db        = require('./conn');
 const axios       = require('axios');
+const jwt = require('jsonwebtoken');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -271,17 +272,18 @@ app.get("/api/toko/books/:id_toko", async(req,res)=>{
 });
 
 //lihat preview buku
-app.get("/api/books/preview/:judul", async (req,res)=>{
-    // if(!token){
-    //     return res.status(401).send({"msg":"token tidak ditemukan!"});
-    // }
+app.post("/api/books/preview/:judul", async (req,res)=>{
+    const token = req.header("x-auth-token");
+    if(!token){
+        return res.status(401).send({"msg":"token tidak ditemukan!"});
+    }
 
-    // let user={};
-    // try {
-    //     user = jwt.verify(token,"proyeksoa");
-    // } catch (error) {
-    //     return res.status(401).send({"msg":"token tidak valid!"});
-    // }
+    let user={};
+    try {
+        user = jwt.verify(token,"proyeksoa");
+    } catch (error) {
+        return res.status(401).send({"msg":"token tidak valid!"});
+    }
 
     let judul = req.params.judul;
     let search = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${judul}&key=AIzaSyCh9du1IyImJP4TjJ2Qj6wasDMvhsz0RlI`);
@@ -310,9 +312,32 @@ app.get("/api/books/preview/:judul", async (req,res)=>{
     let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
     let dateTime = date+' '+time;
 
-    // let inputLog = await executeQuery(`INSERT INTO access_log VALUES (null, '${user.id_user}','${dateTime}')`);
+    let conn = await db.getConn();
+    let cekAccess = await db.executeQuery(conn, `SELECT * FROM access_log WHERE id_user = '${user.id_user}' AND access_time LIKE '${date}%'`);
+    conn.release();
 
-    console.log(hasil);
+    //console.log(cekAccess.length);
+    if(cekAccess.length<2){
+        conn = await db.getConn();
+        let minApiHit = await db.executeQuery(conn, `UPDATE user SET api_hit = api_hit-1 WHERE id_user = '${user.id_user}'`);
+    } else {
+        if(user.saldo>=10000){
+            conn = await db.getConn();
+            let minSaldo = await db.executeQuery(conn, `UPDATE user SET saldo = saldo-10000 WHERE id_user = '${user.id_user}'`);
+        } else {
+            return res.status(400).json({
+                message: 'Saldo anda tidak cukup',
+                status_code: 400
+            });
+        }
+        conn.release();
+    }
+
+    conn = await db.getConn();
+    let inputLog = await db.executeQuery(conn,`INSERT INTO access_log VALUES (null, '${user.id_user}','${dateTime}')`);
+    conn.release();
+
+    //console.log(hasil);
     return res.status(200).json({
         link_preview:hasil[0],
         status_code: 200,

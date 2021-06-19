@@ -155,7 +155,9 @@ router.post('/login', async (req, res) => {
         "id_user": user.id_user,
         "username": user.username,
         "nama": user.nama,
-        "role": user.role
+        "role": user.role,
+        "api_hit":user.api_hit,
+        "saldo":user.saldo
     }, "proyeksoa");
 
     return res.status(200).send({
