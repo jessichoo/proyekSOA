@@ -108,6 +108,17 @@ app.post('/api/user/topup', async (req,res)=>{
 
 //recharge api hit
 app.post("/api/recharge/apihit", async(req,res)=>{
+    const token = req.header("x-auth-token");
+    if(!token){
+        return res.status(401).send({"msg":"token tidak ditemukan!"});
+    }
+
+    let user={};
+    try {
+        user = jwt.verify(token,"proyeksoa");
+    } catch (error) {
+        return res.status(401).send({"msg":"token tidak valid!"});
+    }
     let input = req.body;
     let conn = await db.getConn();
     let cariUser = await db.executeQuery(conn, `SELECT * FROM user WHERE id_user = '${input.id_user}'` );
@@ -174,6 +185,17 @@ app.get("/api/buku/:id_buku", async (req, res) => {
 });
 //lihat toko yang menyediakan buku
 app.get("/api/toko/daftarbuku/:judul", async(req,res)=>{
+    const token = req.header("x-auth-token");
+    if(!token){
+        return res.status(401).send({"msg":"token tidak ditemukan!"});
+    }
+
+    let user={};
+    try {
+        user = jwt.verify(token,"proyeksoa");
+    } catch (error) {
+        return res.status(401).send({"msg":"token tidak valid!"});
+    }
     let conn = await db.getConn();
     let idBuku = await db.executeQuery(conn,`SELECT * FROM buku WHERE judul = '${req.params.judul}'`);
     if(!idBuku.length){
@@ -239,6 +261,17 @@ app.post('/api/user/topup', async (req,res)=>{
 });
 //lihat buku yang terdaftar pada toko
 app.get("/api/toko/books/:id_toko", async(req,res)=>{
+    const token = req.header("x-auth-token");
+    if(!token){
+        return res.status(401).send({"msg":"token tidak ditemukan!"});
+    }
+
+    let user={};
+    try {
+        user = jwt.verify(token,"proyeksoa");
+    } catch (error) {
+        return res.status(401).send({"msg":"token tidak valid!"});
+    }
     let daftar=[];
     let conn = await db.getConn();
     let result = await db.executeQuery(conn, `SELECT * FROM buku_perpus WHERE id_perpus = '${req.params.id_toko}'`);
@@ -282,10 +315,19 @@ app.post("/api/books/preview/:judul", async (req,res)=>{
     try {
         user = jwt.verify(token,"proyeksoa");
     } catch (error) {
-        return res.status(401).send({"msg":"token tidak valid!"});
+        return res.status(400).send({"msg":"token tidak valid!"});
     }
 
     let judul = req.params.judul;
+    let conn = await db.getConn();
+    let cariBuku = await db.executeQuery(`SELECT * FROM buku WHERE buku = '${judul}'`);
+    conn.release();
+    if(!cariBuku.length){
+        return res.status(404).json({
+            message: 'Buku yang anda cari tidak tersedia',
+            status_code: 404
+        });
+    }
     let search = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${judul}&key=AIzaSyCh9du1IyImJP4TjJ2Qj6wasDMvhsz0RlI`);
     let result = search.data.items;
     let hasil = [];
@@ -312,7 +354,7 @@ app.post("/api/books/preview/:judul", async (req,res)=>{
     let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
     let dateTime = date+' '+time;
 
-    let conn = await db.getConn();
+    conn = await db.getConn();
     let cekAccess = await db.executeQuery(conn, `SELECT * FROM access_log WHERE id_user = '${user.id_user}' AND access_time LIKE '${date}%'`);
     conn.release();
 
@@ -335,6 +377,10 @@ app.post("/api/books/preview/:judul", async (req,res)=>{
 
     conn = await db.getConn();
     let inputLog = await db.executeQuery(conn,`INSERT INTO access_log VALUES (null, '${user.id_user}','${dateTime}')`);
+    conn.release();
+
+    conn = await db.getConn();
+    let tambahPreview = await db.executeQuery(`UPDATE buku SET preview = preview + 1 WHERE id_buku = '${cariBuku[0].id}'`);
     conn.release();
 
     //console.log(hasil);
