@@ -320,7 +320,7 @@ app.post("/api/books/preview/:judul", async (req,res)=>{
 
     let judul = req.params.judul;
     let conn = await db.getConn();
-    let cariBuku = await db.executeQuery(`SELECT * FROM buku WHERE buku = '${judul}'`);
+    let cariBuku = await db.executeQuery(`SELECT * FROM buku WHERE LOWER(buku) = '${judul.toLocaleLowerCase()}'`);
     conn.release();
     if(!cariBuku.length){
         return res.status(404).json({
