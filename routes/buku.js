@@ -61,14 +61,9 @@ router.get('/', async (req, res) => {
 // add ke tabel buku dan buku_perpus
 router.post("/add", async(req, res) => {
     let user = cekJwt(req.header("x-auth-token"));
-    if (user == null) {
+    if (user == null || user.role == "U") {
         return res.status(401).send({
             "Error": "Token Invalid"
-        });
-    }else if(user.role == "U"){
-        console.log(user);
-        return res.status(401).send({
-            "Error": "Fitur khusus Perpus"  
         });
     }
 
@@ -86,25 +81,27 @@ router.post("/add", async(req, res) => {
         });
         console.log(dataBuku);
     }catch(error) {
-        return res.status(404).json({
+        return res.status(403).json({
             message: 'ID buku tidak dikenal',
-            status_code: 404
+            status_code: 403
         });
     }
 
     let conn= await db.getConn();
     let result= await db.executeQuery(conn, `SELECT * FROM buku WHERE id = '${input.id_buku}'`);
+    conn.release();
+
     if (!result.length) {
-        let conn2= await db.getConn();
-        let result2= await db.executeQuery(conn2, `INSERT INTO buku VALUES ('${input.id_buku}','${dataBuku[0].nama_buku}', '${dataBuku[0].author}', '${dataBuku[0].tahun}', '${dataBuku[0].genre}' '0')`);
-        if (result2.affectedRows === 0) {
+        conn= await db.getConn();
+        result= await db.executeQuery(conn, `INSERT INTO buku VALUES ('${input.id_buku}','${dataBuku[0].nama_buku}', '${dataBuku[0].author}', '${dataBuku[0].tahun}', '${dataBuku[0].genre}', 0)`);
+        if (result.affectedRows === 0) {
             return res.status(500).json({
                 message: 'Terjadi kesalahan pada server',
                 status_code: 500
             });
         }
     }
-    conn.release();
+    // conn.release();
    
     conn= await db.getConn();
     result= await db.executeQuery(conn, `SELECT * FROM buku_perpus WHERE id_perpus = '${input.id_perpus}' AND id_buku = '${input.id_buku}'`);
@@ -210,17 +207,11 @@ router.get("/best_seller", async(req, res) => {
 // perpus mengubah status suatu buku: 1(aktif), 0(non-aktif)
 router.put("/update", async(req, res) => {
     let user = cekJwt(req.header("x-auth-token"));
-    if (user == null) {
+    if (user == null || user.role == "U") {
         return res.status(401).send({
             "Error": "Token Invalid"
         });
-    }else if(user.role == "U"){
-        console.log(user);
-        return res.status(401).send({
-            "Error": "Fitur khusus Perpus"  
-        });
     }
-
     let input = req.body;
     let conn= await db.getConn();
     let result= await db.executeQuery(conn, `SELECT * FROM buku_perpus WHERE id_buku = '${input.id_buku}' AND id_perpus = '${input.id_perpus}'`);
@@ -258,12 +249,12 @@ router.put("/update", async(req, res) => {
 
 // perpus mengubah status request buku saat menerima request buku
 router.put("/request/update", async(req, res) => {
-    let input = req.body;
+    let input = req.body;b
     let conn= await db.getConn();
     let result= await db.executeQuery(conn, `SELECT * FROM request WHERE id_req = '${input.id_req}'`);
     if (result.length == 0) {
         return res.status(404).json({
-            message: 'Request tidak pernah dibuat',
+            message: 'Request not found!',
             status_code: 404
         });   
     }
@@ -276,12 +267,12 @@ router.put("/request/update", async(req, res) => {
     // console.log(setStatus);
 
     let user = cekJwt(req.header("x-auth-token"));
-    if (user == null) {
+    if (user == null || user.role == "U") {
         return res.status(401).send({
-            "Error": "Token Invalid"
+            "Error": "Invalid Token"
         });
     }
-    console.log(user);
+    // console.log(user);
 
     conn= await db.getConn();
     result= await db.executeQuery(conn, `UPDATE request set status = '${setStatus}', id_perpus = '${user.id_user}'  where id_req = '${input.id_req}'`);
@@ -306,12 +297,12 @@ router.put("/request/update", async(req, res) => {
 router.get("/request", async(req, res) => {
     //pas user login diambil jwt e
     let user = cekJwt(req.header("x-auth-token"));
-    if (user == null) {
+    if (user == null || user.role == "U") {
         return res.status(401).send({
             "Error": "Token Invalid"
         });
     }
-    console.log(user);
+    // console.log(user);
 
     let conn= await db.getConn();
     let result= await db.executeQuery(conn, `SELECT * FROM request WHERE id_user = '${user.id_user}' OR id_perpus= '${user.id_user}'`); //cek user/perpus memiliki req buku?
