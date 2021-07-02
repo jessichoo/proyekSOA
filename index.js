@@ -120,6 +120,12 @@ app.post("/api/recharge/apihit", async(req,res)=>{
         return res.status(401).send({"msg":"token tidak valid!"});
     }
     let input = req.body;
+    if(input.id_user==''){
+        return res.status(400).json({
+            message: 'Id user tidak tidak boleh kosong!',
+            status_code: 400
+        });
+    }
     let conn = await db.getConn();
     let cariUser = await db.executeQuery(conn, `SELECT * FROM user WHERE id_user = '${input.id_user}'` );
     //console.log(cariUser);
@@ -360,8 +366,15 @@ app.post("/api/books/preview/:judul", async (req,res)=>{
 
     //console.log(cekAccess.length);
     if(cekAccess.length<2){
-        conn = await db.getConn();
-        let minApiHit = await db.executeQuery(conn, `UPDATE user SET api_hit = api_hit-1 WHERE id_user = '${user.id_user}'`);
+        if(user.api_hit>=1){
+            conn = await db.getConn();
+            let minApiHit = await db.executeQuery(conn, `UPDATE user SET api_hit = api_hit-1 WHERE id_user = '${user.id_user}'`);
+        } else {
+            return res.status(400).json({
+                message: 'Api hit anda tidak cukup',
+                status_code: 400
+            });
+        }
     } else {
         if(user.saldo>=10000){
             conn = await db.getConn();
