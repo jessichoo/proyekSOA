@@ -194,28 +194,28 @@ router.post('/topup', async (req,res)=>{
     let user = cekJwt(req.header("x-auth-token"));
     if (user == null) {
         return res.status(401).send({
-            "error": "Token Invalid"
+            "error": "Token tidak valid"
         });
     }
     let conn = await db.getConn();
-    let result = await db.executeQuery(conn, `SELECT * FROM user WHERE username = '${req.body.username}'`);
+    let result = await db.executeQuery(conn, `SELECT * FROM user WHERE username = '${user.username}'`);
     if(result.length !=0){
         saldo = parseInt(req.body.saldo)+parseInt(result[0].saldo)
-        result = await db.executeQuery(conn, `update user set saldo='${saldo}' WHERE username = '${req.body.username}'`);
-        result = await db.executeQuery(conn, `SELECT * FROM user WHERE username = '${req.body.username}'`);
-        delete result[0].password
+        result = await db.executeQuery(conn, `update user set saldo='${saldo}' WHERE username = '${user.username}'`);
+        result = await db.executeQuery(conn, `SELECT * FROM user WHERE username = '${user.username}'`);
+        delete result[0].password;
+        conn.release();
         return res.status(200).send({
             "status":200,
             "data":result[0]
-        })
-        
-    }else{
-        return res.status(400).send({
-            "message":"User Tidak Ditemukan"
-        })
+        });
     }
-    conn.release();
-
+    // else{
+    //     conn.release();
+    //     return res.status(400).send({
+    //         "message":"User Tidak Ditemukan"
+    //     })
+    // }
 });
 
 //update user
@@ -224,7 +224,7 @@ router.put("/update", async (req, res) => {
     let user = cekJwt(req.header("x-auth-token"));
     if (user == null) {
         return res.status(401).send({
-            "error": "Token Invalid"
+            "error": "Token tidak valid"
         });
     }
     ////////////////////
@@ -362,16 +362,16 @@ router.post("/recharge/apihit", async(req,res)=>{
     } catch (error) {
         return res.status(401).send({"msg":"token tidak valid!"});
     }
-    let input = req.body;
-    if(input.id_user==''){
-        return res.status(400).json({
-            message: 'Id user tidak tidak boleh kosong!',
-            status_code: 400
-        });
-    }
+    // let input = req.body;
+    // if(input.id_user==''){
+    //     return res.status(400).json({
+    //         message: 'Id user tidak boleh kosong!',
+    //         status_code: 400
+    //     });
+    // }
     let conn = await db.getConn();
-    let cariUser = await db.executeQuery(conn, `SELECT * FROM user WHERE id_user = '${input.id_user}'` );
-    //console.log(cariUser);
+    let cariUser = await db.executeQuery(conn, `SELECT * FROM user WHERE id_user = '${user.id_user}'` );
+    // console.log(cariUser);
     conn.release();
     if(!cariUser.length){
         return res.status(404).json({
@@ -379,7 +379,7 @@ router.post("/recharge/apihit", async(req,res)=>{
             status_code: 404
         });
     }
-    if(cariUser.saldo<10000){
+    if(cariUser[0].saldo<10000){
         return res.status(500).json({
             message: 'Saldo anda tidak mencukupi',
             status_code: 500
@@ -387,7 +387,7 @@ router.post("/recharge/apihit", async(req,res)=>{
     }
 
     conn = await db.getConn();
-    let tambah = await db.executeQuery(conn, `UPDATE user SET api_hit = api_hit+20, saldo = saldo - 10000  WHERE id_user = '${input.id_user}'`)
+    let tambah = await db.executeQuery(conn, `UPDATE user SET api_hit = api_hit+20, saldo = saldo - 10000  WHERE id_user = '${user.id_user}'`)
     if (tambah.affectedRows === 0) {
         return res.status(500).json({
             message: 'Terjadi kesalahan pada server',

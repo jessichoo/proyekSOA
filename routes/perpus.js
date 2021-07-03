@@ -21,7 +21,7 @@ router.get("/daftarbuku", async (req,res)=>{
     });
 })
 
-//lihat toko yang menyediakan buku
+//lihat perpus yang menyediakan buku
 router.get("/daftarbuku/:judul", async(req,res)=>{
     const token = req.header("x-auth-token");
     if(!token){
@@ -61,16 +61,16 @@ router.get("/daftarbuku/:judul", async(req,res)=>{
             conn = await db.getConn();
             let tempToko = await db.executeQuery(conn, `SELECT * FROM user WHERE id_user = '${daftarPerpus[i]}'`);
             const data =  {
-                id_toko: tempToko[0].id_user,
-                nama_toko: tempToko[0].nama,
-                alamat_toko: tempToko[0].alamat,
-                kota: tempToko[0].kota,
-                no_telp:tempToko[0].no_telepon
+                id_perpus: tempToko[0].id_user,
+                nama_perpus: tempToko[0].nama
+                // alamat_perpus: tempToko[0].alamat,
+                // kota: tempToko[0].kota,
+                // no_telp:tempToko[0].no_telepon
             }
             daftarToko.push(data);
         }
         return res.status(200).json({
-            daftar_toko:daftarToko,
+            daftar_perpus:daftarToko,
             status_code: 200,
         });
     }
@@ -78,7 +78,7 @@ router.get("/daftarbuku/:judul", async(req,res)=>{
 });
 
 //lihat buku yang terdaftar pada perpus
-router.get("/books/:id_toko", async(req,res)=>{
+router.get("/books/:id_perpus", async(req,res)=>{
     const token = req.header("x-auth-token");
     if(!token){
         return res.status(401).send({"msg":"token tidak ditemukan!"});
@@ -91,7 +91,7 @@ router.get("/books/:id_toko", async(req,res)=>{
         return res.status(401).send({"msg":"token tidak valid!"});
     }
     let daftar=[];
-    let cekAwal = req.params.id_toko.substr(0,1);
+    let cekAwal = req.params.id_perpus.substr(0,1);
     if(cekAwal!='P'){
         return res.status(400).json({
             message: 'Id perpus yang anda masukkan tidak valid',
@@ -99,7 +99,7 @@ router.get("/books/:id_toko", async(req,res)=>{
         });
     }
     let conn = await db.getConn();
-    let cekPerpus = await db.executeQuery(conn, `SELECT * FROM user WHERE id_user = '${req.params.id_toko}'`);
+    let cekPerpus = await db.executeQuery(conn, `SELECT * FROM user WHERE id_user = '${req.params.id_perpus}'`);
     if(!cekPerpus.length){
         return res.status(404).json({
             message: 'Perpustakaan yang anda cari tidak terdaftar',
@@ -108,7 +108,7 @@ router.get("/books/:id_toko", async(req,res)=>{
     }
     conn.release();
     conn = await db.getConn();
-    let result = await db.executeQuery(conn, `SELECT * FROM buku_perpus WHERE id_perpus = '${req.params.id_toko}'`);
+    let result = await db.executeQuery(conn, `SELECT * FROM buku_perpus WHERE id_perpus = '${req.params.id_perpus}'`);
     //console.log(result);
     if(!result.length){
         return res.status(404).json({

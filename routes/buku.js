@@ -20,7 +20,7 @@ router.get('/', async (req, res) => {
     let user = cekJwt(req.header("x-auth-token"));
     if (user == null) {
         return res.status(401).send({
-            "error": "Token Invalid"
+            "error": "Token tidak valid"
         });
     }
     ////////////////////
@@ -66,7 +66,7 @@ router.post("/preview", async(req,res)=>{
     try {
         user = jwt.verify(token,"proyeksoa");
     } catch (error) {
-        return res.status(400).send({"msg":"token tidak valid!"});
+        return res.status(401).send({"msg":"token tidak valid!"});
     }
     let judul = req.params.judul;
     if(!judul){
@@ -80,7 +80,7 @@ router.post("/preview", async(req,res)=>{
 //lihat preview buku
 router.post("/preview/:judul", async (req,res)=>{
     const token = req.header("x-auth-token");
-    if(!token){
+    if(token == "" || token == null || token == undefined){
         return res.status(401).send({"msg":"token tidak ditemukan!"});
     }
 
@@ -88,11 +88,11 @@ router.post("/preview/:judul", async (req,res)=>{
     try {
         user = jwt.verify(token,"proyeksoa");
     } catch (error) {
-        return res.status(400).send({"msg":"token tidak valid!"});
+        return res.status(401).send({"msg":"token tidak valid!"});
     }
-    
+    let judul = req.params.judul;
     let conn = await db.getConn();
-    let cariBuku = await db.executeQuery(`SELECT * FROM buku WHERE LOWER(buku) = '${judul.toLocaleLowerCase()}'`);
+    let cariBuku = await db.executeQuery(conn, `SELECT * FROM buku WHERE LOWER(judul) = '${judul.toLocaleLowerCase()}'`);
     conn.release();
     if(!cariBuku.length){
         return res.status(404).json({
@@ -104,7 +104,6 @@ router.post("/preview/:judul", async (req,res)=>{
     let result = search.data.items;
     let hasil = [];
     result.forEach(element => {
-        console.log(element);
         let buku={
             "preview_link" :element.accessInfo.webReaderLink
         };
@@ -159,7 +158,7 @@ router.post("/preview/:judul", async (req,res)=>{
     conn.release();
 
     conn = await db.getConn();
-    let tambahPreview = await db.executeQuery(`UPDATE buku SET preview = preview + 1 WHERE id_buku = '${cariBuku[0].id}'`);
+    let tambahPreview = await db.executeQuery(conn, `UPDATE buku SET preview = preview + 1 WHERE id = '${cariBuku[0].id}'`);
     conn.release();
 
     //console.log(hasil);
@@ -175,7 +174,7 @@ router.post("/add", async(req, res) => {
     let user = cekJwt(req.header("x-auth-token"));
     if (user == null || user.role == "U") {
         return res.status(401).send({
-            "error": "Token Invalid"
+            "error": "Token tidak valid"
         });
     }
 
@@ -273,7 +272,7 @@ router.get("/judul_buku", async(req, res) => {
     let user = cekJwt(req.header("x-auth-token"));
     if (user == null || user.role == "U") {
         return res.status(401).send({
-            "error": "Token Invalid"
+            "error": "Token tidak valid"
         });
     }
 
@@ -290,7 +289,7 @@ router.get("/daftar_buku", async(req, res) => {
     let user = cekJwt(req.header("x-auth-token"));
     if (user == null || user.role == "U") {
         return res.status(401).send({
-            "error": "Token Invalid"
+            "error": "Token tidak valid"
         });
     }
 
@@ -310,7 +309,7 @@ router.get("/detail_buku", async(req, res) => {
     let user = cekJwt(req.header("x-auth-token"));
     if (user == null || user.role == "U") {
         return res.status(401).send({
-            "error": "Token Invalid"
+            "error": "Token tidak valid"
         });
     }
 
@@ -333,7 +332,7 @@ router.get("/best_seller", async(req, res) => {
     let user = cekJwt(req.header("x-auth-token"));
     if (user == null || user.role == "U") {
         return res.status(401).send({
-            "error": "Token Invalid"
+            "error": "Token tidak valid"
         });
     }
 
@@ -356,7 +355,7 @@ router.put("/update", async(req, res) => {
     let user = cekJwt(req.header("x-auth-token"));
     if (user == null || user.role == "U") {
         return res.status(401).send({
-            "error": "Token Invalid"
+            "error": "Token tidak valid"
         });
     }
 
@@ -530,7 +529,7 @@ router.get("/request", async(req, res) => {
     let user = cekJwt(req.header("x-auth-token"));
     if (user == null) {
         return res.status(401).send({
-            "error": "Token Invalid"
+            "error": "Token tidak valid"
         });
     }
     // console.log(user);
@@ -575,7 +574,7 @@ router.post("/request", async (req, res) => {
     let user = cekJwt(req.header("x-auth-token"));
     if (user == null || user.role != "U") {
         return res.status(401).send({
-            "error": "Token Invalid"
+            "error": "Token tidak valid"
         });
     }
 
@@ -653,8 +652,9 @@ router.post("/request", async (req, res) => {
         });
     }
     query = await db.executeQuery(conn, `insert into request values('${idbaru}','${user.id_user}','${input.isbn}','${tgl}',0,'${input.id_perpus}')`);
-    conn.release();
     if (query.affectedRows == 1) {
+        query = await db.executeQuery(conn, `update user set api_hit = api_hit-5 where id_user = '${user.id_user}'`);
+        conn.release();
         return res.status(201).send({
             "id_req": idbaru,
             "id_user": user.id_user,
@@ -674,7 +674,7 @@ router.delete("/request", async (req, res) => {
     let user = cekJwt(req.header("x-auth-token"));
     if (user == null || user.role != "U") {
         return res.status(401).send({
-            "error": "Token Invalid"
+            "error": "Token tidak valid"
         });
     }
 
