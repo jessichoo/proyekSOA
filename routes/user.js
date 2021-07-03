@@ -75,18 +75,21 @@ router.post('/register', upload.single("foto_ktp"), async (req, res) => {
             "error": "Role tidak valid"
         });
     }
+    else if (input.username == null || input.password == null || input.nama == null || input.username == "" || input.password == "" || input.nama == "") {
+        conn.release();
+        return res.status(400).send({
+            "error": "Input tidak valid"
+        });
+    }
 
     if (input.role == "U") {
-        // if (input.username == null || input.password == null || input.nama == null) {
-        //     return res.status(400).send("Input tidak lengkap");
-        // }
         query = await db.executeQuery(conn, `select lpad(count(*)+1, 3, '0') as count from user where role = 'U'`);
         let id = "U" + query[0].count;
 
-        query = await db.executeQuery(conn, `insert into user values ('${id}','${input.username}','${input.password}','${input.nama}', null, null, null, 0, 0, 'U')`);
+        query = await db.executeQuery(conn, `insert into user values ('${id}','${input.username}','${input.password}','${input.nama}', 0, 0, 'U')`);
 
         conn.release();
-        if (query.insertedRows != 0) {
+        if (query.affectedRows == 1) {
             return res.status(201).send({
                 "id_user": id,
                 "username": input.username,
@@ -98,23 +101,17 @@ router.post('/register', upload.single("foto_ktp"), async (req, res) => {
         }
     }
     else if (input.role = "P") {
-        // if (input.username == null || input.password == null || input.nama == null || input.alamat == null || input.kota == null || input.no_telepon == null) {
-        //     return res.status(400).send("Input tidak lengkap");
-        // }
         query = await db.executeQuery(conn, `select lpad(count(*)+1, 3, '0') as count from user where role = 'P'`);
         let id = "P" + query[0].count;
 
-        query = await db.executeQuery(conn, `insert into user values ('${id}','${input.username}','${input.password}','${input.nama}', '${input.alamat}', '${input.kota}', '${input.no_telepon}', 0, 0, 'P')`);
+        query = await db.executeQuery(conn, `insert into user values ('${id}','${input.username}','${input.password}','${input.nama}', 0, 0, 'P')`);
 
         conn.release();
-        if (query.insertedRows != 0) {
+        if (query.affectedRows == 1) {
             return res.status(201).send({
                 "id_user": id,
                 "username": input.username,
                 "nama": input.nama,
-                "alamat": input.alamat,
-                "kota": input.kota,
-                "no_telepon": input.no_telepon,
                 "saldo": 0,
                 "api_hit": 0,
                 "role": "Perpustakaan"
@@ -164,6 +161,8 @@ router.post('/login', async (req, res) => {
         "username": user.username,
         "nama": user.nama,
         "role": role,
+        "api_hit": user.api_hit,
+        "saldo": user.saldo,
         "token": token
     });
 });
@@ -184,39 +183,23 @@ router.put("/update", async (req, res) => {
     let query = await db.executeQuery(conn, `select * from user where username = '${user.username}'`);
     let updated = {};
 
+    let role = "";
     switch (user.role) {
         case "P":
-            updated = {
-                "username": user.username,
-                "password": query[0].password,
-                "nama": query[0].nama,
-                "alamat": query[0].alamat,
-                "kota": query[0].kota,
-                "no_telepon": query[0].no_telepon,
-                "role": "Perpustakaan"
-            };
+            role = "Perpustakaan";
             break;
         default:
-            updated = {
-                "username": user.username,
-                "password": query[0].password,
-                "nama": query[0].nama,
-                "role": "User"
-            };
+            role = "User";
             break;
     }
+    
+    updated = {
+        "username": user.username,
+        "password": query[0].password,
+        "nama": query[0].nama,
+        "role": role
+    };
 
-    if (input.no_telepon != "" && input.no_telepon != null) {
-        if (user.role == "P") {
-            query = await db.executeQuery(conn, `update user set no_telepon = '${input.no_telepon}' where username = '${user.username}'`);
-            updated.no_telepon = input.no_telepon;
-        }
-        else {
-            return res.status(400).send({
-                "error": 'Role tidak sesuai'
-            });
-        }
-    }
     if (input.password != "" && input.password != null) {
         query = await db.executeQuery(conn, `update user set password = '${input.password}' where username = '${user.username}'`);
         updated.password = input.password;
