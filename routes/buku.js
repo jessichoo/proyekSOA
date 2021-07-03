@@ -104,7 +104,7 @@ router.post("/add", async(req, res) => {
     // conn.release();
    
     conn= await db.getConn();
-    result= await db.executeQuery(conn, `SELECT * FROM buku_perpus WHERE id_perpus = '${input.id_perpus}' AND id_buku = '${input.id_buku}'`);
+    result= await db.executeQuery(conn, `SELECT * FROM buku_perpus WHERE id_perpus = '${user.id_user}' AND id_buku = '${input.id_buku}'`);
     if (result.length) {
         return res.status(409).json({
             message: 'Buku sudah terdaftar di perpustakaan',
@@ -114,7 +114,7 @@ router.post("/add", async(req, res) => {
     conn.release();
 
     conn= await db.getConn();
-    result= await db.executeQuery(conn, `SELECT * FROM user WHERE id_user = '${input.id_perpus}'`);
+    result= await db.executeQuery(conn, `SELECT * FROM user WHERE id_user = '${user.id_user}'`);
     if (!result.length) {
         return res.status(404).json({
             message: 'Perpustakaan tidak ditemukan',
@@ -124,7 +124,7 @@ router.post("/add", async(req, res) => {
     conn.release();
 
     conn= await db.getConn();
-    result= await db.executeQuery(conn, `INSERT INTO buku_perpus VALUES ('${input.id_buku}', '${input.id_perpus}', '1')`);
+    result= await db.executeQuery(conn, `INSERT INTO buku_perpus VALUES ('${input.id_buku}', '${user.id_user}', '1')`);
     if (result.affectedRows === 0) {
         return res.status(500).json({
             message: 'Terjadi kesalahan pada server',
@@ -212,9 +212,11 @@ router.put("/update", async(req, res) => {
             "Error": "Token Invalid"
         });
     }
+
+    console.log(user);
     let input = req.body;
     let conn= await db.getConn();
-    let result= await db.executeQuery(conn, `SELECT * FROM buku_perpus WHERE id_buku = '${input.id_buku}' AND id_perpus = '${input.id_perpus}'`);
+    let result= await db.executeQuery(conn, `SELECT * FROM buku_perpus WHERE id_buku = '${input.id_buku}' AND id_perpus = '${user.id_user}'`);
     if (result.length == 0) {
         return res.status(404).json({
             message: 'Buku tidak terdaftar terdaftar di perpustakaan',
@@ -227,7 +229,7 @@ router.put("/update", async(req, res) => {
     if(result[0]["status"] == 0){setStatus = 1; statusMsg = "Aktif";}
     // console.log(setStatus);
     conn= await db.getConn();
-    result= await db.executeQuery(conn, `UPDATE buku_perpus set status = '${setStatus}' where id_buku = '${input.id_buku}' AND id_perpus = '${input.id_perpus}'`);
+    result= await db.executeQuery(conn, `UPDATE buku_perpus set status = '${setStatus}' where id_buku = '${input.id_buku}' AND id_perpus = '${user.id_user}'`);
     if (result.affectedRows === 0) {
         return res.status(500).json({
             message: 'Terjadi kesalahan pada server',
@@ -239,7 +241,7 @@ router.put("/update", async(req, res) => {
             message: 'Update status buku berhasil',
             data: {
                 "id_buku": input.id_buku,
-                "id_perpus": input.id_perpus,
+                "id_perpus": user.id_user,
                 "status": statusMsg
             },
             status_code: 200
@@ -249,22 +251,22 @@ router.put("/update", async(req, res) => {
 
 // perpus mengubah status request buku saat menerima request buku
 router.put("/request/update", async(req, res) => {
-    let input = req.body;b
-    let conn= await db.getConn();
-    let result= await db.executeQuery(conn, `SELECT * FROM request WHERE id_req = '${input.id_req}'`);
-    if (result.length == 0) {
+    let input = req.body;
+    let conn1= await db.getConn();
+    let result1= await db.executeQuery(conn1, `SELECT * FROM request WHERE id_req = '${input.id_req}'`);
+    if (result1.length == 0) {
         return res.status(404).json({
             message: 'Request not found!',
             status_code: 404
         });   
     }
-    conn.release();
+    conn1.release();
   
     let setStatus = 0; let statusMessage = "Menunggu Perpustakaan"; //belum ada perpus yang menanggapi
-    if(result[0]["status"] == 0){setStatus = 1; statusMessage = "Diproses Perpustakaan";} //ada perpus yang menanggapi, perpus lain tdk bisa mengambil request ini
-    else if(result[0]["status"] >= 1){setStatus = 2; statusMessage = "Selesai"; } //selesai, saldo user yang tadi dipotong masuk ke saldo saldo perpus, klo gagal kembalikan ke user saldonya
+    if(result1[0]["status"] == 0){setStatus = 1; statusMessage = "Diproses Perpustakaan";} //ada perpus yang menanggapi, perpus lain tdk bisa mengambil request ini
+    else if(result1[0]["status"] >= 1){setStatus = 2; statusMessage = "Selesai"; } //selesai, saldo user yang tadi dipotong masuk ke saldo saldo perpus, klo gagal kembalikan ke user saldonya
+    //status: -1 = gagal krn buku tidak tersedia
 
-    // console.log(setStatus);
 
     let user = cekJwt(req.header("x-auth-token"));
     if (user == null || user.role == "U") {
@@ -272,16 +274,94 @@ router.put("/request/update", async(req, res) => {
             "Error": "Invalid Token"
         });
     }
-    // console.log(user);
+    // console.log(user.id_user);
 
+    let tempBuku = {
+        "idbuku" : result1[0].id_buku, 
+        "idperpus" : result1[0].id_perpus
+    };
+
+    let dataBuku = [];
+    try { //cek apakah buku dengan id itu ada
+        let val = await axios.get("https://www.googleapis.com/books/v1/volumes/" + tempBuku.idbuku);
+        let result = val.data; 
+        dataBuku.push({
+            "id_buku"   : result.id,
+            "nama_buku" : result.volumeInfo.title,
+            "author"    : result.volumeInfo.authors,
+            "tahun"     : result.volumeInfo.publishedDate,
+            "genre"     : result.volumeInfo.categories
+        });
+
+    }catch(error) {
+        let conn= await db.getConn();
+        //buku tidak ditemukan, request digagalkan
+        let result= await db.executeQuery(conn, `UPDATE request set status = '-1', id_perpus = '${user.id_user}'  where id_req = '${input.id_req}'`);
+        conn.release();
+        return res.status(403).json({
+            message: 'ID buku tidak dikenal',
+            status_code: 403
+        });
+    }
+    
+    let conn= await db.getConn();
+    let result= await db.executeQuery(conn, `SELECT * FROM buku WHERE id = '${tempBuku.idbuku}'`);
+    // console.log(tempBuku.idbuku);
+    // console.log(result)
+
+    conn.release();
+    
+    
+    if (!result.length) { //kalau buku blm pernah terdaftar, insert dulu ke tabel buku
+        conn= await db.getConn();
+        result= await db.executeQuery(conn, `INSERT INTO buku VALUES ('${tempBuku.idbuku}','${dataBuku[0].nama_buku}', '${dataBuku[0].author}', '${dataBuku[0].tahun}', '${dataBuku[0].genre}', 0)`);
+        conn.release();
+
+        if (result.affectedRows === 0) {
+            return res.status(500).json({
+                message: 'Terjadi kesalahan pada server',
+                status_code: 500
+            });
+        }
+    }
+
+    conn1= await db.getConn();
+    result1= await db.executeQuery(conn1, `SELECT * FROM buku_perpus WHERE id_perpus = '${user.id_user}' AND id_buku = '${tempBuku.idbuku}'`);
+    // console.log(result1);
+    if (result1.length) { //buku terdaftar pada tabel buku_perpus
+        return res.status(409).json({
+            message: 'Buku sudah terdaftar di perpustakaan',
+            status_code: 409
+        });
+    }
+    conn1.release();
+
+    
     conn= await db.getConn();
-    result= await db.executeQuery(conn, `UPDATE request set status = '${setStatus}', id_perpus = '${user.id_user}'  where id_req = '${input.id_req}'`);
+    
+    result= await db.executeQuery(conn, `INSERT INTO buku_perpus values('${tempBuku.idbuku}', '${user.id_user}', 1)`);
+    conn.release();
+
     if (result.affectedRows === 0) {
         return res.status(500).json({
             message: 'Terjadi kesalahan pada server',
             status_code: 500
         });
-    }else{
+    }
+
+    // setelah semua pengecekan lancar, update status
+    conn= await db.getConn();
+    result= await db.executeQuery(conn, `UPDATE request set status = '${setStatus}', id_perpus = '${user.id_user}'  where id_req = '${input.id_req}'`);
+    conn.release();
+
+    
+   
+
+       
+
+       
+///////////////////////////////////////////////////////////////
+
         return res.status(200).json({
             message: 'Update status request berhasil',
             data:{
@@ -290,7 +370,7 @@ router.put("/request/update", async(req, res) => {
             },
             status_code: 200
         });
-    }
+    
 });
 
 //lihat req buku

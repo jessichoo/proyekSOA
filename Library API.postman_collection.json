@@ -358,7 +358,13 @@
 							"name": "2",
 							"request": {
 								"method": "POST",
-								"header": [],
+								"header": [
+									{
+										"key": "x-auth-token",
+										"value": "{{jwtkey}}",
+										"type": "text"
+									}
+								],
 								"body": {
 									"mode": "urlencoded",
 									"urlencoded": [
@@ -369,7 +375,7 @@
 										},
 										{
 											"key": "id_perpus",
-											"value": "P001",
+											"value": "P000",
 											"type": "text"
 										}
 									]
@@ -393,13 +399,19 @@
 							"name": "3",
 							"request": {
 								"method": "POST",
-								"header": [],
+								"header": [
+									{
+										"key": "x-auth-token",
+										"value": "{{jwtkey}}",
+										"type": "text"
+									}
+								],
 								"body": {
 									"mode": "urlencoded",
 									"urlencoded": [
 										{
 											"key": "id_buku",
-											"value": "qRh7HEV_Q30C",
+											"value": "qRh7HEV_Q30Cz",
 											"type": "text"
 										},
 										{
@@ -463,13 +475,19 @@
 							"name": "Sukses",
 							"request": {
 								"method": "POST",
-								"header": [],
+								"header": [
+									{
+										"key": "x-auth-token",
+										"value": "{{jwtkey}}",
+										"type": "text"
+									}
+								],
 								"body": {
 									"mode": "urlencoded",
 									"urlencoded": [
 										{
 											"key": "id_buku",
-											"value": "qRh7HEV_Q30C",
+											"value": "ukurDwAAQBAJ",
 											"type": "text"
 										},
 										{
@@ -598,7 +616,7 @@
 									"urlencoded": [
 										{
 											"key": "id_buku",
-											"value": "qRh7HEV_Q30Cz",
+											"value": "qRh7HEV_Q30C",
 											"type": "text"
 										},
 										{
@@ -660,6 +678,26 @@
 									""
 								]
 							}
+						}
+					]
+				},
+				{
+					"name": "Update Request Buku",
+					"item": [
+						{
+							"name": "sukses",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-auth-token",
+										"value": "{{jwtkey}}",
+										"type": "text"
+									}
+								],
+								"url": null
+							},
+							"response": []
 						}
 					]
 				}
