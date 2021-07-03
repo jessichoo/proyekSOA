@@ -466,7 +466,7 @@ router.put("/request/update", async(req, res) => {
     
     if (!result.length) { //kalau buku blm pernah terdaftar, insert dulu ke tabel buku
         conn= await db.getConn();
-        result= await db.executeQuery(conn, `INSERT INTO buku VALUES ('${dataBuku[0].id_buku}', '${dataBuku[0].isbn}''${dataBuku[0].nama_buku}', '${dataBuku[0].author}', '${dataBuku[0].tahun}', '${dataBuku[0].genre}', 0)`);
+        result= await db.executeQuery(conn, `INSERT INTO buku VALUES ('${dataBuku[0].id_buku}', '${dataBuku[0].isbn}','${dataBuku[0].nama_buku}', '${dataBuku[0].author}', '${dataBuku[0].tahun}', '${dataBuku[0].genre}', 0)`);
         conn.release();
 
         if (result.affectedRows === 0) {
@@ -567,6 +567,7 @@ router.post("/request", async (req, res) => {
     let conn = await db.getConn();
     let query = await db.executeQuery(conn, `select * from user where id_user = '${user.id_user}'`);
     if (query[0].api_hit < 5) {
+        conn.release();
         return res.status(403).send({
             "error": "API hit user tidak mencukupi"
         });
@@ -575,6 +576,7 @@ router.post("/request", async (req, res) => {
     //cek id perpus
     query = await db.executeQuery(conn, `select * from user where id_user = '${input.id_perpus}'`);
     if (query.length == 0) {
+        conn.release();
         return res.status(404).send({
             "error": "Perpustakaan tidak terdaftar"
         });
@@ -583,14 +585,16 @@ router.post("/request", async (req, res) => {
     //cek buku di perpus
     query = await db.executeQuery(conn, `select * from buku_perpus where isbn = '${input.isbn}' and id_perpus = '${input.id_perpus}'`);
     if (query.length != 0) {
+        conn.release();
         return res.status(400).send({
-            "error": "Buku sudah tersedia di perpustakaan"
+            "error": "Buku sudah terdaftar di perpustakaan"
         });
     }
 
     //cek isbn
     let search = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=isbn:${input.isbn}&key=AIzaSyCh9du1IyImJP4TjJ2Qj6wasDMvhsz0RlI`);
     if (search.data.totalItems == 0) {
+        conn.release();
         return res.status(404).send({
             "error": "Buku tidak ditemukan"
         });
@@ -625,6 +629,7 @@ router.post("/request", async (req, res) => {
     //cek req buku di db
     query = await db.executeQuery(conn, `select * from request where isbn = '${input.isbn}' and id_user = '${user.id_user}' and id_perpus = '${input.id_perpus}'`);
     if (query.length != 0) {
+        conn.release();
         return res.status(400).send({
             "error": "Request buku sudah ada"
         });

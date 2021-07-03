@@ -129,6 +129,19 @@ router.post('/register', upload.single("foto_ktp"), async (req, res) => {
     }
 });
 
+//delete user (buat testing aja)
+router.delete("/", async (req, res) => {
+    let id_user = req.body.id_user;
+    let conn = await db.getConn();
+    let query = await db.executeQuery(conn, `select * from user where id_user = '${id_user}'`);
+    let user = query[0];
+    query = await db.executeQuery(conn, `delete from user where id_user = '${id_user}'`);
+    conn.release();
+    if (query.affectedRows != 0) {
+        return res.status(200).send(user);
+    }
+});
+
 //login
 router.post('/login', async (req, res) => {
     let input = req.body;
@@ -203,7 +216,8 @@ router.post('/topup', async (req,res)=>{
     }
     conn.release();
 
-})
+});
+
 //update user
 router.put("/update", async (req, res) => {
     //cek jwt token
@@ -241,9 +255,21 @@ router.put("/update", async (req, res) => {
         query = await db.executeQuery(conn, `update user set password = '${input.password}' where username = '${user.username}'`);
         updated.password = input.password;
     }
+    else if (input.password == "") {
+        conn.release();
+        return res.status(400).send({
+            "error": "Input tidak valid"
+        });
+    }
     if (input.nama != "" && input.nama != null) {
         query = await db.executeQuery(conn, `update user set nama = '${input.nama}' where username = '${user.username}'`);
         updated.nama = input.nama;
+    }
+    else if (input.nama == "") {
+        conn.release();
+        return res.status(400).send({
+            "error": "Input tidak valid"
+        });
     }
     conn.release();
 
