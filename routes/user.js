@@ -59,7 +59,22 @@ function cekJwt(token) {
 //register
 router.post('/register', upload.single("foto_ktp"), async (req, res) => {
     let input = req.body;
-    input.role = input.role.toUpperCase();
+
+    if (input.role != "U" && input.role != "P") {
+        return res.status(400).send({
+            "error": "Role tidak valid"
+        });
+    }
+    else {
+        input.role = input.role.toUpperCase();
+    }
+
+    if (req.file == undefined) {
+        return res.status(400).send({
+            "error": "Belum upload foto KTP"
+        });
+    }
+    
     let conn = await db.getConn();
     let query = await db.executeQuery(conn, `select * from user where username = '${input.username}'`);
 
@@ -67,12 +82,6 @@ router.post('/register', upload.single("foto_ktp"), async (req, res) => {
         conn.release();
         return res.status(400).send({
             "error": "Username sudah terdaftar"
-        });
-    }
-    else if (input.role != "U" && input.role != "P") {
-        conn.release();
-        return res.status(400).send({
-            "error": "Role tidak valid"
         });
     }
     else if (input.username == null || input.password == null || input.nama == null || input.username == "" || input.password == "" || input.nama == "") {
