@@ -3,6 +3,24 @@ const router = express.Router();
 const db = require('../conn');
 const jwt = require('jsonwebtoken');
 
+router.get("/daftarbuku", async (req,res)=>{
+    const token = req.header("x-auth-token");
+    if(!token){
+        return res.status(401).send({"msg":"token tidak ditemukan!"});
+    }
+
+    let user={};
+    try {
+        user = jwt.verify(token,"proyeksoa");
+    } catch (error) {
+        return res.status(401).send({"msg":"token tidak valid!"});
+    }
+    return res.status(400).json({
+        message: 'Harap inputkan judul buku',
+        status_code: 400
+    });
+})
+
 //lihat toko yang menyediakan buku
 router.get("/daftarbuku/:judul", async(req,res)=>{
     const token = req.header("x-auth-token");
