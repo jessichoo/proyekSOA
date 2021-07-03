@@ -20,7 +20,7 @@ router.get('/', async (req, res) => {
     let user = cekJwt(req.header("x-auth-token"));
     if (user == null) {
         return res.status(401).send({
-            "Error": "Token Invalid"
+            "error": "Token Invalid"
         });
     }
     ////////////////////
@@ -63,7 +63,7 @@ router.post("/add", async(req, res) => {
     let user = cekJwt(req.header("x-auth-token"));
     if (user == null || user.role == "U") {
         return res.status(401).send({
-            "Error": "Token Invalid"
+            "error": "Token Invalid"
         });
     }
 
@@ -187,7 +187,7 @@ router.get("/best_seller", async(req, res) => {
     let user = cekJwt(req.header("x-auth-token"));
     if (user == null) {
         return res.status(401).send({
-            "Error": "Token Invalid"
+            "error": "Token Invalid"
         });
     }
     console.log(user);
@@ -209,7 +209,7 @@ router.put("/update", async(req, res) => {
     let user = cekJwt(req.header("x-auth-token"));
     if (user == null || user.role == "U") {
         return res.status(401).send({
-            "Error": "Token Invalid"
+            "error": "Token Invalid"
         });
     }
 
@@ -271,7 +271,7 @@ router.put("/request/update", async(req, res) => {
     let user = cekJwt(req.header("x-auth-token"));
     if (user == null || user.role == "U") {
         return res.status(401).send({
-            "Error": "Invalid Token"
+            "error": "Invalid Token"
         });
     }
     // console.log(user.id_user);
@@ -379,7 +379,7 @@ router.get("/request", async(req, res) => {
     let user = cekJwt(req.header("x-auth-token"));
     if (user == null || user.role == "U") {
         return res.status(401).send({
-            "Error": "Token Invalid"
+            "error": "Token Invalid"
         });
     }
     // console.log(user);
@@ -399,5 +399,120 @@ router.get("/request", async(req, res) => {
         });
     }
 });
+
+//tambah req buku
+router.post("/request", async (req, res) => {
+    let user = cekJwt(req.header("x-auth-token"));
+    if (user == null || user.role != "U") {
+        return res.status(401).send({
+            "error": "Token Invalid"
+        });
+    }
+
+    let input = req.body;
+
+    //cek id perpus
+    let conn = await db.getConn();
+    let query = await db.executeQuery(conn, `select * from user where id_user = '${input.id_perpus}'`);
+    if (query.length == 0) {
+        return res.status(404).send({
+            "error": "Perpustakaan tidak terdaftar"
+        });
+    }
+
+    //cek isbn
+    let search = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=isbn:${input.isbn}&key=AIzaSyCh9du1IyImJP4TjJ2Qj6wasDMvhsz0RlI`);
+    if (search.data.totalItems == 0) {
+        return res.status(404).send({
+            "error": "Buku tidak ditemukan"
+        });
+    }
+
+    //id request baru
+    query = await db.executeQuery(conn, `select * from request order by id_req desc limit 1`);
+    let idbaru = "";
+    if (query.length == 0) {
+        idbaru = "R001";
+    }
+    else {
+        let pad = "00";
+        let ctr = query[0].id_req.substr(1,3);
+        ctr = parseInt(ctr)+1;
+        idbaru = "R" + pad.substr(pad.length - toString(ctr).length) + ctr;
+    }
+
+    //tgl request
+    let today = new Date();
+    let d = today.getDate();
+    let m = today.getMonth()+1;
+    let y = today.getFullYear();
+    if (d < 10) {
+        d = "0" + d;
+    }
+    if (m < 10) {
+        m = "0" + m;
+    }
+    let tgl = y + "-" + m + "-" + d;
+
+    //cek req buku di db
+    query = await db.executeQuery(conn, `select * from request where isbn = '${input.isbn}' and id_user = '${user.id_user}' and id_perpus = '${input.id_perpus}'`);
+    if (query.length != 0) {
+        return res.status(400).send({
+            "error": "Request buku sudah ada"
+        });
+    }
+    query = await db.executeQuery(conn, `insert into request values('${idbaru}','${user.id_user}','${input.isbn}','${tgl}',0,'${input.id_perpus}')`);
+    conn.release();
+    if (query.affectedRows == 1) {
+        return res.status(201).send({
+            "id_req": idbaru,
+            "id_user": user.id_user,
+            "isbn":input.isbn,
+            "tgl_req": tgl,
+            "status": 0,
+            "id_perpus": input.id_perpus
+        });
+    }
+    else {
+        return res.status(500).send();
+    }
+});
+
+//delete req buku
+router.delete("/request", async (req, res) => {
+    let user = cekJwt(req.header("x-auth-token"));
+    if (user == null || user.role != "U") {
+        return res.status(401).send({
+            "error": "Token Invalid"
+        });
+    }
+
+    let idreq = req.body.id_request;
+
+    let conn = await db.getConn();
+    let query = await db.executeQuery(conn, `select * from request where id_req = '${idreq}'`);
+    if (query.length == 0) {
+        return res.status(404).send({
+            "error": "Request tidak ditemukan"
+        });
+    }
+
+    let reqbuku = query[0];
+    if (reqbuku.id_user != user.id_user) {
+        return res.status(401).send({
+            "error": `Bukan request user ${user.nama}`
+        });
+    }
+
+    query = await db.executeQuery(conn, `delete from request where id_req = '${idreq}'`);
+    conn.release();
+    reqbuku.tgl_req = reqbuku.tgl_req.toISOString().substr(0,10);
+    if (query.affectedRows != 0) {
+        return res.status(200).send(reqbuku);
+    }
+    else {
+        return res.status(500).send();
+    }
+})
 
 module.exports = router;
