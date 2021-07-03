@@ -57,6 +57,119 @@ router.get('/', async (req, res) => {
 // - beli buku
 // - lihat request buku (perpus dan user)
 
+router.post("/preview", async(req,res)=>{
+    const token = req.header("x-auth-token");
+    if(!token){
+        return res.status(401).send({"msg":"token tidak ditemukan!"});
+    }
+
+    let user={};
+    try {
+        user = jwt.verify(token,"proyeksoa");
+    } catch (error) {
+        return res.status(400).send({"msg":"token tidak valid!"});
+    }
+    let judul = req.params.judul;
+    if(!judul){
+        return res.status(400).json({
+            message: 'Harap inputkan judul buku',
+            status_code: 400
+        });
+    }
+})
+
+//lihat preview buku
+router.post("/preview/:judul", async (req,res)=>{
+    const token = req.header("x-auth-token");
+    if(!token){
+        return res.status(401).send({"msg":"token tidak ditemukan!"});
+    }
+
+    let user={};
+    try {
+        user = jwt.verify(token,"proyeksoa");
+    } catch (error) {
+        return res.status(400).send({"msg":"token tidak valid!"});
+    }
+    
+    let conn = await db.getConn();
+    let cariBuku = await db.executeQuery(`SELECT * FROM buku WHERE LOWER(buku) = '${judul.toLocaleLowerCase()}'`);
+    conn.release();
+    if(!cariBuku.length){
+        return res.status(404).json({
+            message: 'Buku yang anda cari tidak tersedia',
+            status_code: 404
+        });
+    }
+    let search = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${judul}&key=AIzaSyCh9du1IyImJP4TjJ2Qj6wasDMvhsz0RlI`);
+    let result = search.data.items;
+    let hasil = [];
+    result.forEach(element => {
+        console.log(element);
+        let buku={
+            "preview_link" :element.accessInfo.webReaderLink
+        };
+        hasil.push(buku);
+    });
+    
+    let today = new Date();
+    let date = "";
+    if((today.getMonth()+1) < 10 && today.getDate() < 10){
+        date = today.getFullYear()+'-0'+(today.getMonth()+1)+'-0'+today.getDate();
+    } else if ((today.getMonth()+1) < 10) {
+        date = today.getFullYear()+'-0'+(today.getMonth()+1)+'-'+today.getDate();
+    } else if (today.getDate() < 10){
+        date = today.getFullYear()+'-'+(today.getMonth()+1)+'-0'+today.getDate();
+    } else {
+        date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+    }
+    
+    let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    let dateTime = date+' '+time;
+
+    conn = await db.getConn();
+    let cekAccess = await db.executeQuery(conn, `SELECT * FROM access_log WHERE id_user = '${user.id_user}' AND access_time LIKE '${date}%'`);
+    conn.release();
+
+    //console.log(cekAccess.length);
+    if(cekAccess.length<2){
+        if(user.api_hit>=1){
+            conn = await db.getConn();
+            let minApiHit = await db.executeQuery(conn, `UPDATE user SET api_hit = api_hit-1 WHERE id_user = '${user.id_user}'`);
+        } else {
+            return res.status(400).json({
+                message: 'Api hit anda tidak cukup',
+                status_code: 400
+            });
+        }
+    } else {
+        if(user.saldo>=10000){
+            conn = await db.getConn();
+            let minSaldo = await db.executeQuery(conn, `UPDATE user SET saldo = saldo-10000 WHERE id_user = '${user.id_user}'`);
+        } else {
+            return res.status(400).json({
+                message: 'Saldo anda tidak cukup',
+                status_code: 400
+            });
+        }
+        conn.release();
+    }
+
+    conn = await db.getConn();
+    let inputLog = await db.executeQuery(conn,`INSERT INTO access_log VALUES (null, '${user.id_user}','${dateTime}')`);
+    conn.release();
+
+    conn = await db.getConn();
+    let tambahPreview = await db.executeQuery(`UPDATE buku SET preview = preview + 1 WHERE id_buku = '${cariBuku[0].id}'`);
+    conn.release();
+
+    //console.log(hasil);
+    return res.status(200).json({
+        link_preview:hasil[0],
+        status_code: 200,
+    });
+
+})
 
 // add ke tabel buku dan buku_perpus
 router.post("/add", async(req, res) => {
@@ -158,6 +271,13 @@ router.get("/dummy", async(req, res) => {
     return res.status(200).json(result);   
 })
 router.get("/judul_buku", async(req, res) => {
+    let user = cekJwt(req.header("x-auth-token"));
+    if (user == null || user.role == "U") {
+        return res.status(401).send({
+            "error": "Token Invalid"
+        });
+    }
+
     req.query.judul = req.query.judul || "";
     let author=`where judul like '%${req.query.judul}%'`;
     let conn= await db.getConn();
@@ -168,6 +288,13 @@ router.get("/judul_buku", async(req, res) => {
 
 //lihat daftar buku by author dan genre
 router.get("/daftar_buku", async(req, res) => {
+    let user = cekJwt(req.header("x-auth-token"));
+    if (user == null || user.role == "U") {
+        return res.status(401).send({
+            "error": "Token Invalid"
+        });
+    }
+
     req.query.genre = req.query.genre || "";
     req.query.author = req.query.author || "";
     req.query.judul = req.query.judul || "";
@@ -181,6 +308,13 @@ router.get("/daftar_buku", async(req, res) => {
 
 //lihat detail buku
 router.get("/detail_buku", async(req, res) => {
+    let user = cekJwt(req.header("x-auth-token"));
+    if (user == null || user.role == "U") {
+        return res.status(401).send({
+            "error": "Token Invalid"
+        });
+    }
+
     let id=req.body.id;
     let conn= await db.getConn();
     let result= await db.executeQuery(conn, `SELECT id,judul,author,genre FROM buku where id='${id}'`);
@@ -198,11 +332,12 @@ router.get("/detail_buku", async(req, res) => {
 
 router.get("/best_seller", async(req, res) => {
     let user = cekJwt(req.header("x-auth-token"));
-    if (user == null) {
+    if (user == null || user.role == "U") {
         return res.status(401).send({
             "error": "Token Invalid"
         });
     }
+
     console.log(user);
     let limit="";
     if(req.query.limit){
@@ -296,9 +431,6 @@ router.put("/request/update", async(req, res) => {
 
     let dataBuku = [];
     try { //cek apakah buku dengan id itu ada
-        // let val = await axios.get("https://www.googleapis.com/books/v1/volumes/" + tempBuku.idbuku);
-        
-
         //cek isbn
         let val = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=isbn:${tempBuku.isbn}`);
         let result = val.data; 
@@ -325,7 +457,7 @@ router.put("/request/update", async(req, res) => {
     }
     
     let conn= await db.getConn();
-    let result= await db.executeQuery(conn, `SELECT * FROM buku WHERE id = '${tempBuku.idbuku}'`);
+    let result= await db.executeQuery(conn, `SELECT * FROM buku WHERE isbn = '${tempBuku.isbn}'`);
     // console.log(tempBuku.idbuku);
     // console.log(result)
 
@@ -334,7 +466,7 @@ router.put("/request/update", async(req, res) => {
     
     if (!result.length) { //kalau buku blm pernah terdaftar, insert dulu ke tabel buku
         conn= await db.getConn();
-        result= await db.executeQuery(conn, `INSERT INTO buku VALUES ('${tempBuku.idbuku}','${dataBuku[0].nama_buku}', '${dataBuku[0].author}', '${dataBuku[0].tahun}', '${dataBuku[0].genre}', 0)`);
+        result= await db.executeQuery(conn, `INSERT INTO buku VALUES ('${dataBuku[0].id_buku}', '${dataBuku[0].isbn}''${dataBuku[0].nama_buku}', '${dataBuku[0].author}', '${dataBuku[0].tahun}', '${dataBuku[0].genre}', 0)`);
         conn.release();
 
         if (result.affectedRows === 0) {
@@ -359,7 +491,7 @@ router.put("/request/update", async(req, res) => {
     
     conn= await db.getConn();
     
-    result= await db.executeQuery(conn, `INSERT INTO buku_perpus values('${tempBuku.idbuku}', '${user.id_user}', 1)`);
+    result= await db.executeQuery(conn, `INSERT INTO buku_perpus values('${tempBuku.isbn}', '${user.id_user}', 1)`);
     conn.release();
 
     if (result.affectedRows === 0) {
