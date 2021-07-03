@@ -295,13 +295,13 @@ router.get("/detail_buku", async(req, res) => {
         });
     }
 
-    let id=req.body.id;
+    let isbn=req.body.isbn;
     let conn= await db.getConn();
-    let result= await db.executeQuery(conn, `SELECT id,judul,author,genre FROM buku where id='${id}'`);
+    let result= await db.executeQuery(conn, `SELECT isbn,judul,author,genre FROM buku where isbn='${isbn}'`);
     conn.release();
     if(result.length==0){
         return res.status(500).json({
-            message: 'Id buku tidak ditemukan',
+            message: 'ISBN buku tidak ditemukan',
             status_code: 500
         });
     }else{
