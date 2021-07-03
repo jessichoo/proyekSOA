@@ -296,9 +296,6 @@ router.put("/request/update", async(req, res) => {
 
     let dataBuku = [];
     try { //cek apakah buku dengan id itu ada
-        // let val = await axios.get("https://www.googleapis.com/books/v1/volumes/" + tempBuku.idbuku);
-        
-
         //cek isbn
         let val = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=isbn:${tempBuku.isbn}`);
         let result = val.data; 
@@ -325,7 +322,7 @@ router.put("/request/update", async(req, res) => {
     }
     
     let conn= await db.getConn();
-    let result= await db.executeQuery(conn, `SELECT * FROM buku WHERE id = '${tempBuku.idbuku}'`);
+    let result= await db.executeQuery(conn, `SELECT * FROM buku WHERE isbn = '${tempBuku.isbn}'`);
     // console.log(tempBuku.idbuku);
     // console.log(result)
 
@@ -334,7 +331,7 @@ router.put("/request/update", async(req, res) => {
     
     if (!result.length) { //kalau buku blm pernah terdaftar, insert dulu ke tabel buku
         conn= await db.getConn();
-        result= await db.executeQuery(conn, `INSERT INTO buku VALUES ('${tempBuku.idbuku}','${dataBuku[0].nama_buku}', '${dataBuku[0].author}', '${dataBuku[0].tahun}', '${dataBuku[0].genre}', 0)`);
+        result= await db.executeQuery(conn, `INSERT INTO buku VALUES ('${dataBuku[0].id_buku}', '${dataBuku[0].isbn}''${dataBuku[0].nama_buku}', '${dataBuku[0].author}', '${dataBuku[0].tahun}', '${dataBuku[0].genre}', 0)`);
         conn.release();
 
         if (result.affectedRows === 0) {
@@ -359,7 +356,7 @@ router.put("/request/update", async(req, res) => {
     
     conn= await db.getConn();
     
-    result= await db.executeQuery(conn, `INSERT INTO buku_perpus values('${tempBuku.idbuku}', '${user.id_user}', 1)`);
+    result= await db.executeQuery(conn, `INSERT INTO buku_perpus values('${tempBuku.isbn}', '${user.id_user}', 1)`);
     conn.release();
 
     if (result.affectedRows === 0) {
