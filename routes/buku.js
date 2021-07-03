@@ -563,12 +563,28 @@ router.post("/request", async (req, res) => {
 
     let input = req.body;
 
-    //cek id perpus
+    //cek api hit user
     let conn = await db.getConn();
-    let query = await db.executeQuery(conn, `select * from user where id_user = '${input.id_perpus}'`);
+    let query = await db.executeQuery(conn, `select * from user where id_user = '${user.id_user}'`);
+    if (query[0].api_hit < 5) {
+        return res.status(403).send({
+            "error": "API hit user tidak mencukupi"
+        });
+    }
+
+    //cek id perpus
+    query = await db.executeQuery(conn, `select * from user where id_user = '${input.id_perpus}'`);
     if (query.length == 0) {
         return res.status(404).send({
             "error": "Perpustakaan tidak terdaftar"
+        });
+    }
+
+    //cek buku di perpus
+    query = await db.executeQuery(conn, `select * from buku_perpus where isbn = '${input.isbn}' and id_perpus = '${input.id_perpus}'`);
+    if (query.length != 0) {
+        return res.status(400).send({
+            "error": "Buku sudah tersedia di perpustakaan"
         });
     }
 
