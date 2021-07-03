@@ -157,6 +157,14 @@ router.get("/dummy", async(req, res) => {
     conn.release();
     return res.status(200).json(result);   
 })
+router.get("/judul_buku", async(req, res) => {
+    req.query.judul = req.query.judul || "";
+    let author=`where judul like '%${req.query.judul}%'`;
+    let conn= await db.getConn();
+    let result= await db.executeQuery(conn, `SELECT id,judul,author,genre FROM buku ${author}`);
+    conn.release();
+    return res.status(200).json(result);   
+})
 
 //lihat daftar buku by author dan genre
 router.get("/daftar_buku", async(req, res) => {
@@ -166,7 +174,7 @@ router.get("/daftar_buku", async(req, res) => {
     let author=`where author like '%${req.query.author}%' and genre like '%${req.query.genre}%' and judul like '%${req.query.judul}%'`;
     console.log(author)
     let conn= await db.getConn();
-    let result= await db.executeQuery(conn, `SELECT * FROM buku ${author}`);
+    let result= await db.executeQuery(conn, `SELECT id,judul,author,genre FROM buku ${author}`);
     conn.release();
     return res.status(200).json(result);   
 })
@@ -175,7 +183,7 @@ router.get("/daftar_buku", async(req, res) => {
 router.get("/detail_buku", async(req, res) => {
     let id=req.body.id;
     let conn= await db.getConn();
-    let result= await db.executeQuery(conn, `SELECT * FROM buku where id='${id}'`);
+    let result= await db.executeQuery(conn, `SELECT id,judul,author,genre FROM buku where id='${id}'`);
     conn.release();
     if(result.length==0){
         return res.status(500).json({
