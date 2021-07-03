@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Jun 15, 2021 at 08:30 PM
+-- Generation Time: Jun 20, 2021 at 11:13 AM
 -- Server version: 10.4.11-MariaDB
 -- PHP Version: 7.4.4
 
@@ -35,15 +35,26 @@ CREATE TABLE `buku` (
   `judul` varchar(50) NOT NULL,
   `author` varchar(50) DEFAULT NULL,
   `tahun` varchar(50) DEFAULT NULL,
-  `genre` varchar(100) DEFAULT NULL
+  `genre` varchar(100) DEFAULT NULL,
+  `preview` int(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `buku`
 --
 
-INSERT INTO `buku` (`id`, `judul`, `author`, `tahun`, `genre`) VALUES
-('qRh7HEV_Q30C', 'HAI', NULL, NULL, NULL);
+INSERT INTO `buku` (`id`, `judul`, `author`, `tahun`, `genre`, `preview`) VALUES
+('005SAQAAMAAJ', 'The Flower Vase', 'Sarah Carter Edgarton Mayo', '1844', 'undefined', 0),
+('98nTDwAAQBAJ', 'BROKEN (Cover Baru) Something Cool tentang Berubah', 'Dedy Dahlan', '2020-02-03', 'Self-Help', 0),
+('A5yxDwAAQBAJ', 'Dan Muhammad adalah Utusan Allah', 'Annemarie Schimmel', '2019-09-25', 'Religion', 0),
+('GmYFEAAAQBAJ', 'Karakter Menentukan Masa Depan Bangsa', 'Santo Budiono', '2020-10-26', 'Self-Help', 0),
+('ITGyDwAAQBAJ', '250 Questions That Will Change Your Life', 'Ade Aprilia', '2019-08-05', 'Self-Help', 0),
+('jpSeDwAAQBAJ', 'Kitab Shahih Bukhari Jilid 2 (HC)', 'Yoli Hemdi', '2019-04-29', 'Religion', 0),
+('ukurDwAAQBAJ', 'Turn Right', 'Inez Natalia', '2019-08-28', 'Business & Economics', 0),
+('vhceEAAAQBAJ', 'Teologi Korupsi', 'Prof. Dr. H.Nasaruddin Umar, MA', '2021-02-09', 'Religion', 0),
+('wPaTDwAAQBAJ', 'Citizenship in Indonesia', 'Safrudin Amin', '2019-04-15', 'Political Science', 0),
+('xCvGDwAAQBAJ', 'Indonesia Dalam Rekayasa Kehidupan', 'Dharma Pongrekun', '2019-11-18', 'Philosophy', 0),
+('YLfdDQAAQBAJ', '100 Tokoh Paling Berpengaruh di Dunia', 'Michael Hart', '2017-01-10', 'History', 0);
 
 -- --------------------------------------------------------
 
@@ -63,7 +74,9 @@ CREATE TABLE `buku_perpus` (
 --
 
 INSERT INTO `buku_perpus` (`id_buku`, `id_perpus`, `status`) VALUES
-('qRh7HEV_Q30C', 'P001', 1);
+('005SAQAAMAAJ', 'P001', 1),
+('3cKJpFYbM68C', 'P001', 1),
+('qRh7HEV_Q30C', 'P001', 0);
 
 -- --------------------------------------------------------
 
@@ -87,7 +100,7 @@ CREATE TABLE `request` (
 
 INSERT INTO `request` (`id_req`, `id_user`, `id_buku`, `tgl_req`, `status`, `id_perpus`) VALUES
 ('R001', 'U001', 'test', '0000-00-00', 0, NULL),
-('R002', 'U001', '1234', '0000-00-00', 0, 'P001');
+('R002', 'U001', '1234', '0000-00-00', 2, 'P001');
 
 -- --------------------------------------------------------
 
@@ -115,7 +128,7 @@ CREATE TABLE `user` (
 
 INSERT INTO `user` (`id_user`, `username`, `password`, `nama`, `alamat`, `kota`, `no_telepon`, `api_hit`, `saldo`, `role`) VALUES
 ('P001', 'perpus1', '111', 'New User 1', 'undefined', 'undefined', 'undefined', 0, 0, 'P'),
-('U001', 'utuk', 'utuk123', 'utuk utuk', 'jl utuk utuk', 'surabaya', '123', 60, 0, 'u'),
+('U001', 'utuk', 'utuk123', 'utuk utuk', 'jl utuk utuk', 'surabaya', '123', 60, 0, 'U'),
 ('U002', 'user1', '111', 'New User 1', NULL, NULL, NULL, 0, 0, 'U');
 
 --

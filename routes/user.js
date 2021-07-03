@@ -23,7 +23,7 @@ const storage=multer.diskStorage({
             callback(null,(file_name+'.'+extension));
         }
         else {
-            callback("Error: Role tidak valid", null);
+            callback("error: Role tidak valid", null);
         }
     }
 });
@@ -35,7 +35,7 @@ function checkFileType(file,cb){
     if(mimetype && extname){
         return cb(null,true);
     }else{
-        return cb(error = 'Error: Bukan JPG/PNG');
+        return cb(error = 'error: Bukan JPG/PNG');
     }
 }
 
@@ -66,13 +66,13 @@ router.post('/register', upload.single("foto_ktp"), async (req, res) => {
     if (query.length != 0) {
         conn.release();
         return res.status(400).send({
-            "Error": "Username sudah terdaftar"
+            "error": "Username sudah terdaftar"
         });
     }
     else if (input.role != "U" && input.role != "P") {
         conn.release();
         return res.status(400).send({
-            "Error": "Role tidak valid"
+            "error": "Role tidak valid"
         });
     }
 
@@ -131,12 +131,12 @@ router.post('/login', async (req, res) => {
     conn.release();
     if (query.length == 0) {
         return res.status(404).send({
-            "Error": "Username tidak terdaftar"
+            "error": "Username tidak terdaftar"
         });
     }
     else if (query[0].password != input.password) {
         return res.status(400).send({
-            "Error": "Password salah"
+            "error": "Password salah"
         });
     }
 
@@ -155,7 +155,9 @@ router.post('/login', async (req, res) => {
         "id_user": user.id_user,
         "username": user.username,
         "nama": user.nama,
-        "role": user.role
+        "role": user.role,
+        "api_hit":user.api_hit,
+        "saldo":user.saldo
     }, "proyeksoa");
 
     return res.status(200).send({
@@ -172,7 +174,7 @@ router.put("/update", async (req, res) => {
     let user = cekJwt(req.header("x-auth-token"));
     if (user == null) {
         return res.status(401).send({
-            "Error": "Token Invalid"
+            "error": "Token Invalid"
         });
     }
     ////////////////////
@@ -211,7 +213,7 @@ router.put("/update", async (req, res) => {
         }
         else {
             return res.status(400).send({
-                "Error": 'Role tidak sesuai'
+                "error": 'Role tidak sesuai'
             });
         }
     }

@@ -6,25 +6,26 @@
 	},
 	"item": [
 		{
-			"name": "cari perpus berdasarkan kota",
+			"name": "lihat toko yang menyediakan buku",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:3000/api/library/:city",
+					"raw": "localhost:3000/api/toko/daftarbuku/:judul",
 					"host": [
 						"localhost"
 					],
 					"port": "3000",
 					"path": [
 						"api",
-						"library",
-						":city"
+						"toko",
+						"daftarbuku",
+						":judul"
 					],
 					"variable": [
 						{
-							"key": "city",
-							"value": "Malang"
+							"key": "judul",
+							"value": "HAI"
 						}
 					]
 				}
@@ -41,7 +42,7 @@
 					"urlencoded": [
 						{
 							"key": "id_user",
-							"value": "",
+							"value": "U001",
 							"type": "text"
 						}
 					]
@@ -67,21 +68,84 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:3000/api/library/books/:id_perpus",
+					"raw": "localhost:3000/api/toko/books/:id_toko",
 					"host": [
 						"localhost"
 					],
 					"port": "3000",
 					"path": [
 						"api",
-						"library",
+						"toko",
 						"books",
-						":id_perpus"
+						":id_toko"
 					],
 					"variable": [
 						{
-							"key": "id_perpus",
+							"key": "id_toko",
 							"value": "P001"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "id_buku_api",
+							"value": "gK98gXR8onwC",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:3000/api/books/add",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"books",
+						"add"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "lihat preview buku",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiVTAwMSIsInVzZXJuYW1lIjoidXR1ayIsIm5hbWEiOiJ1dHVrIHV0dWsiLCJyb2xlIjoidSIsImFwaV9oaXQiOjYwLCJzYWxkbyI6MCwiaWF0IjoxNjI0MDY2MTg3fQ.3xyRE69il45WkV4jkzzEkf3-y4PRS9xRNh4eFoYLvvI",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:3000/api/books/preview/:judul",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"books",
+						"preview",
+						":judul"
+					],
+					"variable": [
+						{
+							"key": "judul",
+							"value": "Little Magacal Piya"
 						}
 					]
 				}

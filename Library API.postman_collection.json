@@ -1,0 +1,999 @@
+{
+	"info": {
+		"_postman_id": "99a23166-5ab8-43a3-91d8-b03f63001d21",
+		"name": "Library API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "User Umum",
+			"item": [
+				{
+					"name": "Add Bookshelf (data 3rd API)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": null
+					},
+					"response": []
+				},
+				{
+					"name": "Lihat Bookshelf",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": null
+					},
+					"response": []
+				},
+				{
+					"name": "Best Seller",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/buku/best_seller?limit=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"buku",
+								"best_seller"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "1",
+									"description": "Untuk membatasi jumlah buku best seller yang akan di tampilkan"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lihat Daftar Buku",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/buku/daftar_buku?author=Dedy Dahlan",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"buku",
+								"daftar_buku"
+							],
+							"query": [
+								{
+									"key": "judul",
+									"value": "Turn Right",
+									"disabled": true
+								},
+								{
+									"key": "genre",
+									"value": "Self-Help",
+									"disabled": true
+								},
+								{
+									"key": "author",
+									"value": "Dedy Dahlan",
+									"description": "untuk menampilkan author"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Perpustakaan",
+			"item": [
+				{
+					"name": "Add Buku",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{jwtkey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "id_buku",
+									"value": "005SAQAAMAAJ",
+									"type": "text"
+								},
+								{
+									"key": "id_perpus",
+									"value": "P001",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:3000/api/buku/add",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"buku",
+								"add"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Add Buku",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-auth-token",
+										"value": "{{jwtkey}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "id_buku",
+											"value": "005SAQAAMAAJ",
+											"type": "text"
+										},
+										{
+											"key": "id_perpus",
+											"value": "P001",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "localhost:3000/api/buku/add",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"buku",
+										"add"
+									]
+								}
+							},
+							"status": "Conflict",
+							"code": 409,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "68"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"44-gpwzrw6rXdt7iAckZxpZthLYYoo\""
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 28 Jun 2021 13:33:23 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Buku sudah terdaftar di perpustakaan\",\n    \"status_code\": 409\n}"
+						}
+					]
+				},
+				{
+					"name": "Update Request Book",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{jwtkey}}",
+								"type": "text"
+							}
+						],
+						"url": null
+					},
+					"response": []
+				},
+				{
+					"name": "Update Status Buku",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{jwtkey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "id_buku",
+									"value": "qRh7HEV_Q30C",
+									"type": "text"
+								},
+								{
+									"key": "id_perpus",
+									"value": "P001",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:3000/api/buku/update",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"buku",
+								"update"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Testing",
+			"item": [
+				{
+					"name": "Add Buku",
+					"item": [
+						{
+							"name": "1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// pm.test(\"Berhasil menambah buku\", function(){\r",
+											"//     pm.response.to.have.status(201)\r",
+											"// });\r",
+											"// pm.test(\"Invalid Token\", function(){\r",
+											"//     pm.response.to.have.status(401)\r",
+											"// });\r",
+											"// pm.test(\"Unauthorized access\", function(){\r",
+											"//     pm.response.to.have.status(402)\r",
+											"// });\r",
+											"// pm.test(\"Book ID not found!\", function(){\r",
+											"//     pm.response.to.have.status(403)\r",
+											"// });\r",
+											"// pm.test(\"Perpustakaan not found!\", function(){\r",
+											"//     pm.response.to.have.status(404)\r",
+											"// });\r",
+											"\r",
+											"// pm.test(\"Book already registered\", function(){\r",
+											"//     pm.response.to.have.status(409)\r",
+											"// });\r",
+											"\r",
+											"// pm.test(\"Server Error\", function(){\r",
+											"//     pm.response.to.have.status(500)\r",
+											"// });\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-auth-token",
+										"value": "{{jwtkey}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "id_buku",
+											"value": "qRh7HEV_Q30C",
+											"type": "text"
+										},
+										{
+											"key": "id_perpus",
+											"value": "P001",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "localhost:3000/api/buku/add",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"buku",
+										"add"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "2",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-auth-token",
+										"value": "{{jwtkey}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "id_buku",
+											"value": "qRh7HEV_Q30C",
+											"type": "text"
+										},
+										{
+											"key": "id_perpus",
+											"value": "P000",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "localhost:3000/api/buku/add",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"buku",
+										"add"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "3",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-auth-token",
+										"value": "{{jwtkey}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "id_buku",
+											"value": "qRh7HEV_Q30Cz",
+											"type": "text"
+										},
+										{
+											"key": "id_perpus",
+											"value": "P001",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "localhost:3000/api/buku/add",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"buku",
+										"add"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "4",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "id_buku",
+											"value": "qRh7HEV_Q30C",
+											"type": "text"
+										},
+										{
+											"key": "id_perpus",
+											"value": "P001",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "localhost:3000/api/buku/add",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"buku",
+										"add"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Sukses",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-auth-token",
+										"value": "{{jwtkey}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "id_buku",
+											"value": "ukurDwAAQBAJ",
+											"type": "text"
+										},
+										{
+											"key": "id_perpus",
+											"value": "P001",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "localhost:3000/api/buku/add",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"buku",
+										"add"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Berhasil menambah buku\", function(){",
+									"    pm.response.to.have.status(201)",
+									"});",
+									"pm.test(\"Invalid Token\", function(){",
+									"    pm.response.to.have.status(401)",
+									"});",
+									"",
+									"pm.test(\"Book ID not found!\", function(){",
+									"    pm.response.to.have.status(403)",
+									"});",
+									"pm.test(\"Perpustakaan not found!\", function(){",
+									"    pm.response.to.have.status(404)",
+									"});",
+									"",
+									"pm.test(\"Book already registered\", function(){",
+									"    pm.response.to.have.status(409)",
+									"});",
+									"",
+									"pm.test(\"Server Error\", function(){",
+									"    pm.response.to.have.status(500)",
+									"});",
+									"",
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Update Buku",
+					"item": [
+						{
+							"name": "1",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "x-auth-token",
+										"value": "{{jwtkey}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "id_buku",
+											"value": "qRh7HEV_Q30Cz",
+											"type": "text"
+										},
+										{
+											"key": "id_perpus",
+											"value": "P001",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "localhost:3000/api/buku/update",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"buku",
+										"update"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Sukses",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "x-auth-token",
+										"value": "{{jwtkey}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "id_buku",
+											"value": "qRh7HEV_Q30C",
+											"type": "text"
+										},
+										{
+											"key": "id_perpus",
+											"value": "P001",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "localhost:3000/api/buku/update",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"buku",
+										"update"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Update Success!\", function(){",
+									"    pm.response.to.have.status(200)",
+									"});",
+									"pm.test(\"Invalid Token\", function(){",
+									"    pm.response.to.have.status(401)",
+									"});",
+									"",
+									"pm.test(\"Book ID not found!\", function(){",
+									"    pm.response.to.have.status(404)",
+									"});",
+									"// pm.test(\"Request not found!\", function(){",
+									"//     pm.response.to.have.status(404)",
+									"// });",
+									"",
+									"pm.test(\"Server Error\", function(){",
+									"    pm.response.to.have.status(500)",
+									"});",
+									"",
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Update Request Buku",
+					"item": [
+						{
+							"name": "sukses",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-auth-token",
+										"value": "{{jwtkey}}",
+										"type": "text"
+									}
+								],
+								"url": null
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "username",
+							"value": "user1",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "111",
+							"type": "text"
+						},
+						{
+							"key": "nama",
+							"value": "New User 1",
+							"type": "text"
+						},
+						{
+							"key": "alamat",
+							"value": "Jl. Abc",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "kota",
+							"value": "Sby",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "no_telepon",
+							"value": "123123123",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "role",
+							"value": "U",
+							"type": "text"
+						},
+						{
+							"key": "foto_ktp",
+							"type": "file",
+							"src": []
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:3000/api/user/register",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"user",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Login is Success\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    const responseJson = pm.response.json();\r",
+							"    pm.collectionVariables.set(\"jwtkey\", responseJson.jwtkey);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "username",
+							"value": "perpus1",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "111",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:3000/api/user/login",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"user",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cari judul buku (3rd API)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiVTAwMiIsInVzZXJuYW1lIjoidXNlcjEiLCJuYW1hIjoiTmV3IFVzZXIgMSIsInJvbGUiOiJVIiwiaWF0IjoxNjIzMjI4NTA3fQ.zhrMZLNtfu3YFKLXivuYgNA_xCzM0r3rNCreDS_-N68",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:3000/api/buku/?judul=as",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"buku",
+						""
+					],
+					"query": [
+						{
+							"key": "judul",
+							"value": "as"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update user",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"value": "",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "password",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "nama_user",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "no_telepon",
+							"value": "",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:3000/api/user/update",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"user",
+						"update"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Lihat Request Book",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiUDAwMSIsInVzZXJuYW1lIjoicGVycHVzMSIsIm5hbWEiOiJOZXcgVXNlciAxIiwicm9sZSI6IlAiLCJhcGlfaGl0IjowLCJzYWxkbyI6MCwiaWF0IjoxNjI0MTc1MjQyfQ.81CTJxNW-TO-OrlW8TNmgE7du_OjjKDIt4xs4DfRUoI",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": []
+				},
+				"url": {
+					"raw": "localhost:3000/api/buku/request",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"buku",
+						"request"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "jwtkey",
+			"value": ""
+		},
+		{
+			"key": "username",
+			"value": ""
+		},
+		{
+			"key": "nama",
+			"value": ""
+		},
+		{
+			"key": "saldo",
+			"value": ""
+		},
+		{
+			"key": "api_hit",
+			"value": ""
+		},
+		{
+			"key": "role",
+			"value": ""
+		},
+		{
+			"key": "password",
+			"value": ""
+		},
+		{
+			"key": "alamat",
+			"value": ""
+		},
+		{
+			"key": "kota",
+			"value": ""
+		},
+		{
+			"key": "no_telepon",
+			"value": ""
+		}
+	]
+}

@@ -20,7 +20,7 @@ router.get('/', async (req, res) => {
     let user = cekJwt(req.header("x-auth-token"));
     if (user == null) {
         return res.status(401).send({
-            "Error": "Token Invalid"
+            "error": "Token Invalid"
         });
     }
     ////////////////////
@@ -60,6 +60,13 @@ router.get('/', async (req, res) => {
 
 // add ke tabel buku dan buku_perpus
 router.post("/add", async(req, res) => {
+    let user = cekJwt(req.header("x-auth-token"));
+    if (user == null || user.role == "U") {
+        return res.status(401).send({
+            "error": "Token Invalid"
+        });
+    }
+
     let input = req.body; let dataBuku = [];
     try {
         let val = await axios.get("https://www.googleapis.com/books/v1/volumes/" + input.id_buku);
@@ -70,32 +77,34 @@ router.post("/add", async(req, res) => {
             "nama_buku" : result.volumeInfo.title,
             "author"    : result.volumeInfo.authors,
             "tahun"     : result.volumeInfo.publishedDate,
-            "genre"     : "NULL"
+            "genre"     : result.categories
         });
         console.log(dataBuku);
     }catch(error) {
-        return res.status(404).json({
+        return res.status(403).json({
             message: 'ID buku tidak dikenal',
-            status_code: 404
+            status_code: 403
         });
     }
 
     let conn= await db.getConn();
     let result= await db.executeQuery(conn, `SELECT * FROM buku WHERE id = '${input.id_buku}'`);
+    conn.release();
+
     if (!result.length) {
-        let conn2= await db.getConn();
-        let result2= await db.executeQuery(conn2, `INSERT INTO buku VALUES ('${input.id_buku}','${dataBuku[0].nama_buku}', '${dataBuku[0].author}', '${dataBuku[0].tahun}', '${dataBuku[0].genre}','0')`);
-        if (result2.affectedRows === 0) {
+        conn= await db.getConn();
+        result= await db.executeQuery(conn, `INSERT INTO buku VALUES ('${input.id_buku}','${dataBuku[0].nama_buku}', '${dataBuku[0].author}', '${dataBuku[0].tahun}', '${dataBuku[0].genre}', 0)`);
+        if (result.affectedRows === 0) {
             return res.status(500).json({
                 message: 'Terjadi kesalahan pada server',
                 status_code: 500
             });
         }
     }
-    conn.release();
+    // conn.release();
    
     conn= await db.getConn();
-    result= await db.executeQuery(conn, `SELECT * FROM buku_perpus WHERE id_perpus = '${input.id_perpus}' AND id_buku = '${input.id_buku}'`);
+    result= await db.executeQuery(conn, `SELECT * FROM buku_perpus WHERE id_perpus = '${user.id_user}' AND id_buku = '${input.id_buku}'`);
     if (result.length) {
         return res.status(409).json({
             message: 'Buku sudah terdaftar di perpustakaan',
@@ -105,7 +114,7 @@ router.post("/add", async(req, res) => {
     conn.release();
 
     conn= await db.getConn();
-    result= await db.executeQuery(conn, `SELECT * FROM user WHERE id_user = '${input.id_perpus}'`);
+    result= await db.executeQuery(conn, `SELECT * FROM user WHERE id_user = '${user.id_user}'`);
     if (!result.length) {
         return res.status(404).json({
             message: 'Perpustakaan tidak ditemukan',
@@ -115,7 +124,7 @@ router.post("/add", async(req, res) => {
     conn.release();
 
     conn= await db.getConn();
-    result= await db.executeQuery(conn, `INSERT INTO buku_perpus VALUES ('${input.id_buku}', '${input.id_perpus}', '1')`);
+    result= await db.executeQuery(conn, `INSERT INTO buku_perpus VALUES ('${input.id_buku}', '${user.id_user}', '1')`);
     if (result.affectedRows === 0) {
         return res.status(500).json({
             message: 'Terjadi kesalahan pada server',
@@ -131,13 +140,14 @@ router.post("/add", async(req, res) => {
     });
     
 });
+
 router.get("/dummy", async(req, res) => {
     let conn= await db.getConn();
     let val = await axios.get("https://www.googleapis.com/books/v1/volumes?&q=isbn=9786023857456");
     let result = val.data.items; 
     for (const e of result) {
         let random = Math.floor(Math.random() * 20);
-        await db.executeQuery(conn, `INSERT INTO buku VALUES ('${e.id}','${e.volumeInfo.title}', '${e.volumeInfo.authors[0]}', '${e.volumeInfo.publishedDate}', '${e.volumeInfo.categories[0]}','${random}')`);
+        await db.executeQuery(conn, `INSERT INTO buku VALUES ('${e.id}','${e.volumeInfo.title}', '${e.volumeInfo.authors[0]}', '${e.volumeInfo.publishedDate}', '${e.volumeInfo.categories[0]}', '${random}')`);
     }
     conn.release();
     return res.status(200).json(result);   
@@ -150,6 +160,7 @@ router.get("/judul_buku", async(req, res) => {
     conn.release();
     return res.status(200).json(result);   
 })
+
 //lihat daftar buku by author dan genre
 router.get("/daftar_buku", async(req, res) => {
     req.query.genre = req.query.genre || "";
@@ -162,6 +173,7 @@ router.get("/daftar_buku", async(req, res) => {
     conn.release();
     return res.status(200).json(result);   
 })
+
 //lihat detail buku
 router.get("/detail_buku", async(req, res) => {
     let id=req.body.id;
@@ -178,7 +190,15 @@ router.get("/detail_buku", async(req, res) => {
     }
   
 })
+
 router.get("/best_seller", async(req, res) => {
+    let user = cekJwt(req.header("x-auth-token"));
+    if (user == null) {
+        return res.status(401).send({
+            "error": "Token Invalid"
+        });
+    }
+    console.log(user);
     let limit="";
     if(req.query.limit){
         limit=`LIMIT ${req.query.limit}`
@@ -191,11 +211,20 @@ router.get("/best_seller", async(req, res) => {
     return res.status(200).json(result);   
 
 })
+
 // perpus mengubah status suatu buku: 1(aktif), 0(non-aktif)
 router.put("/update", async(req, res) => {
+    let user = cekJwt(req.header("x-auth-token"));
+    if (user == null || user.role == "U") {
+        return res.status(401).send({
+            "error": "Token Invalid"
+        });
+    }
+
+    console.log(user);
     let input = req.body;
     let conn= await db.getConn();
-    let result= await db.executeQuery(conn, `SELECT * FROM buku_perpus WHERE id_buku = '${input.id_buku}' AND id_perpus = '${input.id_perpus}'`);
+    let result= await db.executeQuery(conn, `SELECT * FROM buku_perpus WHERE id_buku = '${input.id_buku}' AND id_perpus = '${user.id_user}'`);
     if (result.length == 0) {
         return res.status(404).json({
             message: 'Buku tidak terdaftar terdaftar di perpustakaan',
@@ -208,7 +237,7 @@ router.put("/update", async(req, res) => {
     if(result[0]["status"] == 0){setStatus = 1; statusMsg = "Aktif";}
     // console.log(setStatus);
     conn= await db.getConn();
-    result= await db.executeQuery(conn, `UPDATE buku_perpus set status = '${setStatus}' where id_buku = '${input.id_buku}' AND id_perpus = '${input.id_perpus}'`);
+    result= await db.executeQuery(conn, `UPDATE buku_perpus set status = '${setStatus}' where id_buku = '${input.id_buku}' AND id_perpus = '${user.id_user}'`);
     if (result.affectedRows === 0) {
         return res.status(500).json({
             message: 'Terjadi kesalahan pada server',
@@ -220,7 +249,7 @@ router.put("/update", async(req, res) => {
             message: 'Update status buku berhasil',
             data: {
                 "id_buku": input.id_buku,
-                "id_perpus": input.id_perpus,
+                "id_perpus": user.id_user,
                 "status": statusMsg
             },
             status_code: 200
@@ -231,30 +260,116 @@ router.put("/update", async(req, res) => {
 // perpus mengubah status request buku saat menerima request buku
 router.put("/request/update", async(req, res) => {
     let input = req.body;
-    let conn= await db.getConn();
-    let result= await db.executeQuery(conn, `SELECT * FROM request WHERE id_req = '${input.id_req}'`);
-    if (result.length == 0) {
+    let conn1= await db.getConn();
+    let result1= await db.executeQuery(conn1, `SELECT * FROM request WHERE id_req = '${input.id_req}'`);
+    if (result1.length == 0) {
         return res.status(404).json({
-            message: 'Request tidak pernah dibuat',
+            message: 'Request not found!',
             status_code: 404
         });   
     }
-    conn.release();
+    conn1.release();
   
-    let setStatus = 0; let statusMessage = "Menunggu Perpus"; //belum ada perpus yang menanggapi
-    if(result[0]["status"] == 0){setStatus = 1; statusMessage = "Diproses Perpus";} //ada perpus yang menanggapi, perpus lain tdk bisa mengambil request ini
-    else if(result[0]["status"] >= 1){setStatus = 2; statusMessage = "Selesai"; } //selesai, saldo user yang tadi dipotong masuk ke saldo saldo perpus, klo gagal kembalikan ke user saldonya
+    let setStatus = 0; let statusMessage = "Menunggu Perpustakaan"; //belum ada perpus yang menanggapi
+    if(result1[0]["status"] == 0){setStatus = 1; statusMessage = "Diproses Perpustakaan";} //ada perpus yang menanggapi, perpus lain tdk bisa mengambil request ini
+    else if(result1[0]["status"] >= 1){setStatus = 2; statusMessage = "Selesai"; } //selesai, saldo user yang tadi dipotong masuk ke saldo saldo perpus, klo gagal kembalikan ke user saldonya
+    //status: -1 = gagal krn buku tidak tersedia
 
-    // console.log(setStatus);
 
+    let user = cekJwt(req.header("x-auth-token"));
+    if (user == null || user.role == "U") {
+        return res.status(401).send({
+            "error": "Invalid Token"
+        });
+    }
+    // console.log(user.id_user);
+
+    let tempBuku = {
+        "idbuku" : result1[0].id_buku, 
+        "idperpus" : result1[0].id_perpus
+    };
+
+    let dataBuku = [];
+    try { //cek apakah buku dengan id itu ada
+        let val = await axios.get("https://www.googleapis.com/books/v1/volumes/" + tempBuku.idbuku);
+        let result = val.data; 
+        dataBuku.push({
+            "id_buku"   : result.id,
+            "nama_buku" : result.volumeInfo.title,
+            "author"    : result.volumeInfo.authors,
+            "tahun"     : result.volumeInfo.publishedDate,
+            "genre"     : result.volumeInfo.categories
+        });
+
+    }catch(error) {
+        let conn= await db.getConn();
+        //buku tidak ditemukan, request digagalkan
+        let result= await db.executeQuery(conn, `UPDATE request set status = '-1', id_perpus = '${user.id_user}'  where id_req = '${input.id_req}'`);
+        conn.release();
+        return res.status(403).json({
+            message: 'ID buku tidak dikenal',
+            status_code: 403
+        });
+    }
+    
+    let conn= await db.getConn();
+    let result= await db.executeQuery(conn, `SELECT * FROM buku WHERE id = '${tempBuku.idbuku}'`);
+    // console.log(tempBuku.idbuku);
+    // console.log(result)
+
+    conn.release();
+    
+    
+    if (!result.length) { //kalau buku blm pernah terdaftar, insert dulu ke tabel buku
+        conn= await db.getConn();
+        result= await db.executeQuery(conn, `INSERT INTO buku VALUES ('${tempBuku.idbuku}','${dataBuku[0].nama_buku}', '${dataBuku[0].author}', '${dataBuku[0].tahun}', '${dataBuku[0].genre}', 0)`);
+        conn.release();
+
+        if (result.affectedRows === 0) {
+            return res.status(500).json({
+                message: 'Terjadi kesalahan pada server',
+                status_code: 500
+            });
+        }
+    }
+
+    conn1= await db.getConn();
+    result1= await db.executeQuery(conn1, `SELECT * FROM buku_perpus WHERE id_perpus = '${user.id_user}' AND id_buku = '${tempBuku.idbuku}'`);
+    // console.log(result1);
+    if (result1.length) { //buku terdaftar pada tabel buku_perpus
+        return res.status(409).json({
+            message: 'Buku sudah terdaftar di perpustakaan',
+            status_code: 409
+        });
+    }
+    conn1.release();
+
+    
     conn= await db.getConn();
-    result= await db.executeQuery(conn, `UPDATE request set status = '${setStatus}' where id_req = '${input.id_req}'`);
+    
+    result= await db.executeQuery(conn, `INSERT INTO buku_perpus values('${tempBuku.idbuku}', '${user.id_user}', 1)`);
+    conn.release();
+
     if (result.affectedRows === 0) {
         return res.status(500).json({
             message: 'Terjadi kesalahan pada server',
             status_code: 500
         });
-    }else{
+    }
+
+    // setelah semua pengecekan lancar, update status
+    conn= await db.getConn();
+    result= await db.executeQuery(conn, `UPDATE request set status = '${setStatus}', id_perpus = '${user.id_user}'  where id_req = '${input.id_req}'`);
+    conn.release();
+
+    
+   
+
+       
+
+       
+///////////////////////////////////////////////////////////////
+
         return res.status(200).json({
             message: 'Update status request berhasil',
             data:{
@@ -263,22 +378,22 @@ router.put("/request/update", async(req, res) => {
             },
             status_code: 200
         });
-    }
+    
 });
 
 //lihat req buku
 router.get("/request", async(req, res) => {
     //pas user login diambil jwt e
     let user = cekJwt(req.header("x-auth-token"));
-    if (user == null) {
+    if (user == null || user.role == "U") {
         return res.status(401).send({
-            "Error": "Token Invalid"
+            "error": "Token Invalid"
         });
     }
-    console.log(user);
+    // console.log(user);
 
     let conn= await db.getConn();
-    let result= await db.executeQuery(conn, `SELECT * FROM request WHERE id_user = '${user.id_user}' OR id_user= '${user.id_perpus}'`); //cek user/perpus memiliki req buku?
+    let result= await db.executeQuery(conn, `SELECT * FROM request WHERE id_user = '${user.id_user}' OR id_perpus= '${user.id_user}'`); //cek user/perpus memiliki req buku?
     if (result.length == 0) {
         return res.status(404).json({
             message: `User '${user.id_user}' tidak pernah membuat request`,
@@ -293,7 +408,119 @@ router.get("/request", async(req, res) => {
     }
 });
 
+//tambah req buku
+router.post("/request", async (req, res) => {
+    let user = cekJwt(req.header("x-auth-token"));
+    if (user == null || user.role != "U") {
+        return res.status(401).send({
+            "error": "Token Invalid"
+        });
+    }
 
+    let input = req.body;
 
+    //cek id perpus
+    let conn = await db.getConn();
+    let query = await db.executeQuery(conn, `select * from user where id_user = '${input.id_perpus}'`);
+    if (query.length == 0) {
+        return res.status(404).send({
+            "error": "Perpustakaan tidak terdaftar"
+        });
+    }
+
+    //cek isbn
+    let search = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=isbn:${input.isbn}&key=AIzaSyCh9du1IyImJP4TjJ2Qj6wasDMvhsz0RlI`);
+    if (search.data.totalItems == 0) {
+        return res.status(404).send({
+            "error": "Buku tidak ditemukan"
+        });
+    }
+
+    //id request baru
+    query = await db.executeQuery(conn, `select * from request order by id_req desc limit 1`);
+    let idbaru = "";
+    if (query.length == 0) {
+        idbaru = "R001";
+    }
+    else {
+        let pad = "00";
+        let ctr = query[0].id_req.substr(1,3);
+        ctr = parseInt(ctr)+1;
+        idbaru = "R" + pad.substr(pad.length - toString(ctr).length) + ctr;
+    }
+
+    //tgl request
+    let today = new Date();
+    let d = today.getDate();
+    let m = today.getMonth()+1;
+    let y = today.getFullYear();
+    if (d < 10) {
+        d = "0" + d;
+    }
+    if (m < 10) {
+        m = "0" + m;
+    }
+    let tgl = y + "-" + m + "-" + d;
+
+    //cek req buku di db
+    query = await db.executeQuery(conn, `select * from request where isbn = '${input.isbn}' and id_user = '${user.id_user}' and id_perpus = '${input.id_perpus}'`);
+    if (query.length != 0) {
+        return res.status(400).send({
+            "error": "Request buku sudah ada"
+        });
+    }
+    query = await db.executeQuery(conn, `insert into request values('${idbaru}','${user.id_user}','${input.isbn}','${tgl}',0,'${input.id_perpus}')`);
+    conn.release();
+    if (query.affectedRows == 1) {
+        return res.status(201).send({
+            "id_req": idbaru,
+            "id_user": user.id_user,
+            "isbn":input.isbn,
+            "tgl_req": tgl,
+            "status": 0,
+            "id_perpus": input.id_perpus
+        });
+    }
+    else {
+        return res.status(500).send();
+    }
+});
+
+//delete req buku
+router.delete("/request", async (req, res) => {
+    let user = cekJwt(req.header("x-auth-token"));
+    if (user == null || user.role != "U") {
+        return res.status(401).send({
+            "error": "Token Invalid"
+        });
+    }
+
+    let idreq = req.body.id_request;
+
+    let conn = await db.getConn();
+    let query = await db.executeQuery(conn, `select * from request where id_req = '${idreq}'`);
+    if (query.length == 0) {
+        return res.status(404).send({
+            "error": "Request tidak ditemukan"
+        });
+    }
+
+    let reqbuku = query[0];
+    if (reqbuku.id_user != user.id_user) {
+        return res.status(401).send({
+            "error": `Bukan request user ${user.nama}`
+        });
+    }
+
+    query = await db.executeQuery(conn, `delete from request where id_req = '${idreq}'`);
+    conn.release();
+    reqbuku.tgl_req = reqbuku.tgl_req.toISOString().substr(0,10);
+    if (query.affectedRows != 0) {
+        return res.status(200).send(reqbuku);
+    }
+    else {
+        return res.status(500).send();
+    }
+})
 
 module.exports = router;

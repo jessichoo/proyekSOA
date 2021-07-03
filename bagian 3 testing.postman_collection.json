@@ -1,0 +1,821 @@
+{
+	"info": {
+		"_postman_id": "b4f45dd3-358c-43ad-9a88-a6e713a9461e",
+		"name": "bagian 3 testing",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Lihat toko yang menyediakan buku tertentu",
+			"item": [
+				{
+					"name": "tidak ada token",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "localhost:3000/api/toko/daftarbuku/:judul",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"toko",
+								"daftarbuku",
+								":judul"
+							],
+							"variable": [
+								{
+									"key": "judul",
+									"value": "little magacal piya"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "token tidak valid",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "asdasd",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:3000/api/toko/daftarbuku/:judul",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"toko",
+								"daftarbuku",
+								":judul"
+							],
+							"variable": [
+								{
+									"key": "judul",
+									"value": "little magacal piya"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "judul kosong",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{jwtkey}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:3000/api/toko/daftarbuku/:judul",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"toko",
+								"daftarbuku",
+								":judul"
+							],
+							"variable": [
+								{
+									"key": "judul",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "toko tidak ditemukan",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{jwtkey}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:3000/api/toko/daftarbuku/:judul",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"toko",
+								"daftarbuku",
+								":judul"
+							],
+							"variable": [
+								{
+									"key": "judul",
+									"value": "little magacal piya"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "success",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{jwtkey}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:3000/api/toko/daftarbuku/:judul",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"toko",
+								"daftarbuku",
+								":judul"
+							],
+							"variable": [
+								{
+									"key": "judul",
+									"value": "the flower vase"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cari daftar buku",
+			"item": [
+				{
+					"name": "tidak ada token",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:3000/api/toko/books/:id_toko",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"toko",
+								"books",
+								":id_toko"
+							],
+							"variable": [
+								{
+									"key": "id_toko",
+									"value": "P001"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "token tidak valid",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "asdasd",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:3000/api/toko/books/:id_toko",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"toko",
+								"books",
+								":id_toko"
+							],
+							"variable": [
+								{
+									"key": "id_toko",
+									"value": "P001"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "success",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{jwtkey}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:3000/api/toko/books/:id_toko",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"toko",
+								"books",
+								":id_toko"
+							],
+							"variable": [
+								{
+									"key": "id_toko",
+									"value": "P001"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "toko tidak ditemukan",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{jwtkey}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:3000/api/toko/books/:id_toko",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"toko",
+								"books",
+								":id_toko"
+							],
+							"variable": [
+								{
+									"key": "id_toko",
+									"value": "P000"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "id toko kosong",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{jwtkey}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:3000/api/toko/books/:id_toko",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"toko",
+								"books",
+								":id_toko"
+							],
+							"variable": [
+								{
+									"key": "id_toko",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Recharge API",
+			"item": [
+				{
+					"name": "success",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{jwtkey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "id_user",
+									"value": "U001",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:3000/api/recharge/apihit",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"recharge",
+								"apihit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "tidak ada token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "id_user",
+									"value": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:3000/api/recharge/apihit",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"recharge",
+								"apihit"
+							],
+							"query": [
+								{
+									"key": "x-auth-token",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "token tidak valid",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "asdasd",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "id_user",
+									"value": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:3000/api/recharge/apihit",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"recharge",
+								"apihit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "id user kosong",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "id_user",
+									"value": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:3000/api/recharge/apihit",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"recharge",
+								"apihit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user tidak ditemukan",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{jwtkey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "id_user",
+									"value": "U000",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:3000/api/recharge/apihit",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"recharge",
+								"apihit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "saldo tidak cukup",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{jwtkey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "id_user",
+									"value": "U001",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:3000/api/recharge/apihit",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"recharge",
+								"apihit"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Lihat preview buku",
+			"item": [
+				{
+					"name": "token tidak valid",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:3000/api/books/preview/:judul",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"books",
+								"preview",
+								":judul"
+							],
+							"variable": [
+								{
+									"key": "judul",
+									"value": "little magacal piya"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "token tidak ditemukan",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "asdasd",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:3000/api/books/preview/:judul",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"books",
+								"preview",
+								":judul"
+							],
+							"variable": [
+								{
+									"key": "judul",
+									"value": "little magacal piya"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "success",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{jwtkey}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:3000/api/books/preview/:judul",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"books",
+								"preview",
+								":judul"
+							],
+							"variable": [
+								{
+									"key": "judul",
+									"value": "the flower vase"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "judul buku kosong",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{jwtkey}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:3000/api/books/preview/:judul",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"books",
+								"preview",
+								":judul"
+							],
+							"variable": [
+								{
+									"key": "judul",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "judul buku tidak terdaftar",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{jwtkey}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:3000/api/books/preview/:judul",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"books",
+								"preview",
+								":judul"
+							],
+							"variable": [
+								{
+									"key": "judul",
+									"value": "little magacal piya"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "saldo tidak cukup",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{jwtkey}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:3000/api/books/preview/:judul",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"books",
+								"preview",
+								":judul"
+							],
+							"variable": [
+								{
+									"key": "judul",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "api hit tidak cukup",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{jwtkey}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:3000/api/books/preview/:judul",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"books",
+								"preview",
+								":judul"
+							],
+							"variable": [
+								{
+									"key": "judul",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
