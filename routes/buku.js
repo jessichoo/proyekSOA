@@ -56,6 +56,27 @@ router.get('/', async (req, res) => {
 // - update req buku : id user, id buku, status, tgl
 // - lihat request buku (perpus dan user)
 
+router.post("/preview", async(req,res)=>{
+    const token = req.header("x-auth-token");
+    if(!token){
+        return res.status(401).send({"msg":"token tidak ditemukan!"});
+    }
+
+    let user={};
+    try {
+        user = jwt.verify(token,"proyeksoa");
+    } catch (error) {
+        return res.status(400).send({"msg":"token tidak valid!"});
+    }
+    let judul = req.params.judul;
+    if(!judul){
+        return res.status(400).json({
+            message: 'Harap inputkan judul buku',
+            status_code: 400
+        });
+    }
+})
+
 //lihat preview buku
 router.post("/preview/:judul", async (req,res)=>{
     const token = req.header("x-auth-token");
@@ -69,8 +90,7 @@ router.post("/preview/:judul", async (req,res)=>{
     } catch (error) {
         return res.status(400).send({"msg":"token tidak valid!"});
     }
-
-    let judul = req.params.judul;
+    
     let conn = await db.getConn();
     let cariBuku = await db.executeQuery(`SELECT * FROM buku WHERE LOWER(buku) = '${judul.toLocaleLowerCase()}'`);
     conn.release();
@@ -250,6 +270,13 @@ router.get("/dummy", async(req, res) => {
     return res.status(200).json(result);   
 })
 router.get("/judul_buku", async(req, res) => {
+    let user = cekJwt(req.header("x-auth-token"));
+    if (user == null || user.role == "U") {
+        return res.status(401).send({
+            "error": "Token Invalid"
+        });
+    }
+
     req.query.judul = req.query.judul || "";
     let author=`where judul like '%${req.query.judul}%'`;
     let conn= await db.getConn();
@@ -260,6 +287,13 @@ router.get("/judul_buku", async(req, res) => {
 
 //lihat daftar buku by author dan genre
 router.get("/daftar_buku", async(req, res) => {
+    let user = cekJwt(req.header("x-auth-token"));
+    if (user == null || user.role == "U") {
+        return res.status(401).send({
+            "error": "Token Invalid"
+        });
+    }
+
     req.query.genre = req.query.genre || "";
     req.query.author = req.query.author || "";
     req.query.judul = req.query.judul || "";
@@ -273,6 +307,13 @@ router.get("/daftar_buku", async(req, res) => {
 
 //lihat detail buku
 router.get("/detail_buku", async(req, res) => {
+    let user = cekJwt(req.header("x-auth-token"));
+    if (user == null || user.role == "U") {
+        return res.status(401).send({
+            "error": "Token Invalid"
+        });
+    }
+
     let id=req.body.id;
     let conn= await db.getConn();
     let result= await db.executeQuery(conn, `SELECT id,judul,author,genre FROM buku where id='${id}'`);
@@ -290,11 +331,12 @@ router.get("/detail_buku", async(req, res) => {
 
 router.get("/best_seller", async(req, res) => {
     let user = cekJwt(req.header("x-auth-token"));
-    if (user == null) {
+    if (user == null || user.role == "U") {
         return res.status(401).send({
             "error": "Token Invalid"
         });
     }
+
     console.log(user);
     let limit="";
     if(req.query.limit){
@@ -539,12 +581,28 @@ router.post("/request", async (req, res) => {
 
     let input = req.body;
 
-    //cek id perpus
+    //cek api hit user
     let conn = await db.getConn();
-    let query = await db.executeQuery(conn, `select * from user where id_user = '${input.id_perpus}'`);
+    let query = await db.executeQuery(conn, `select * from user where id_user = '${user.id_user}'`);
+    if (query[0].api_hit < 5) {
+        return res.status(403).send({
+            "error": "API hit user tidak mencukupi"
+        });
+    }
+
+    //cek id perpus
+    query = await db.executeQuery(conn, `select * from user where id_user = '${input.id_perpus}'`);
     if (query.length == 0) {
         return res.status(404).send({
             "error": "Perpustakaan tidak terdaftar"
+        });
+    }
+
+    //cek buku di perpus
+    query = await db.executeQuery(conn, `select * from buku_perpus where isbn = '${input.isbn}' and id_perpus = '${input.id_perpus}'`);
+    if (query.length != 0) {
+        return res.status(400).send({
+            "error": "Buku sudah tersedia di perpustakaan"
         });
     }
 
