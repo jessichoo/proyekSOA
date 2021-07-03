@@ -167,6 +167,34 @@ router.post('/login', async (req, res) => {
     });
 });
 
+//top up saldo
+router.post('/topup', async (req,res)=>{
+    let user = cekJwt(req.header("x-auth-token"));
+    if (user == null) {
+        return res.status(401).send({
+            "error": "Token Invalid"
+        });
+    }
+    let conn = await db.getConn();
+    let result = await db.executeQuery(conn, `SELECT * FROM user WHERE username = '${req.body.username}'`);
+    if(result.length !=0){
+        saldo = parseInt(req.body.saldo)+parseInt(result[0].saldo)
+        result = await db.executeQuery(conn, `update user set saldo='${saldo}' WHERE username = '${req.body.username}'`);
+        result = await db.executeQuery(conn, `SELECT * FROM user WHERE username = '${req.body.username}'`);
+        delete result[0].password
+        return res.status(200).send({
+            "status":200,
+            "data":result[0]
+        })
+        
+    }else{
+        return res.status(400).send({
+            "message":"User Tidak Ditemukan"
+        })
+    }
+    conn.release();
+
+})
 //update user
 router.put("/update", async (req, res) => {
     //cek jwt token

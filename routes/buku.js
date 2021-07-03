@@ -158,6 +158,13 @@ router.get("/dummy", async(req, res) => {
     return res.status(200).json(result);   
 })
 router.get("/judul_buku", async(req, res) => {
+    let user = cekJwt(req.header("x-auth-token"));
+    if (user == null || user.role == "U") {
+        return res.status(401).send({
+            "error": "Token Invalid"
+        });
+    }
+
     req.query.judul = req.query.judul || "";
     let author=`where judul like '%${req.query.judul}%'`;
     let conn= await db.getConn();
@@ -168,6 +175,13 @@ router.get("/judul_buku", async(req, res) => {
 
 //lihat daftar buku by author dan genre
 router.get("/daftar_buku", async(req, res) => {
+    let user = cekJwt(req.header("x-auth-token"));
+    if (user == null || user.role == "U") {
+        return res.status(401).send({
+            "error": "Token Invalid"
+        });
+    }
+
     req.query.genre = req.query.genre || "";
     req.query.author = req.query.author || "";
     req.query.judul = req.query.judul || "";
@@ -181,6 +195,13 @@ router.get("/daftar_buku", async(req, res) => {
 
 //lihat detail buku
 router.get("/detail_buku", async(req, res) => {
+    let user = cekJwt(req.header("x-auth-token"));
+    if (user == null || user.role == "U") {
+        return res.status(401).send({
+            "error": "Token Invalid"
+        });
+    }
+
     let id=req.body.id;
     let conn= await db.getConn();
     let result= await db.executeQuery(conn, `SELECT id,judul,author,genre FROM buku where id='${id}'`);
@@ -198,11 +219,12 @@ router.get("/detail_buku", async(req, res) => {
 
 router.get("/best_seller", async(req, res) => {
     let user = cekJwt(req.header("x-auth-token"));
-    if (user == null) {
+    if (user == null || user.role == "U") {
         return res.status(401).send({
             "error": "Token Invalid"
         });
     }
+
     console.log(user);
     let limit="";
     if(req.query.limit){
