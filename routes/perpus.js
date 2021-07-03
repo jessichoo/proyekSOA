@@ -17,7 +17,7 @@ router.get("/daftarbuku/:judul", async(req,res)=>{
         return res.status(401).send({"msg":"token tidak valid!"});
     }
     let conn = await db.getConn();
-    let idBuku = await db.executeQuery(conn,`SELECT * FROM buku WHERE judul = '${req.params.judul}'`);
+    let idBuku = await db.executeQuery(conn,`SELECT * FROM buku WHERE LOWER(judul) = '${req.params.judul.toLocaleLowerCase()}'`);
     if(!idBuku.length){
         return res.status(404).json({
             message: 'Buku yang anda cari tidak ditemukan',
@@ -26,7 +26,7 @@ router.get("/daftarbuku/:judul", async(req,res)=>{
     } else {
         let daftarPerpus=[];
         conn = await db.getConn();
-        let idToko = await db.executeQuery(conn,`SELECT * FROM buku_perpus WHERE id_buku = '${idBuku[0].id}'`);
+        let idToko = await db.executeQuery(conn,`SELECT * FROM buku_perpus WHERE isbn = '${idBuku[0].isbn}'`);
         if(!idToko.length){
             return res.status(404).json({
                 message: 'Tidak ada perpustakaan yang menyediakan buku ini',
