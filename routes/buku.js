@@ -57,6 +57,27 @@ router.get('/', async (req, res) => {
 // - beli buku
 // - lihat request buku (perpus dan user)
 
+router.post("/preview", async(req,res)=>{
+    const token = req.header("x-auth-token");
+    if(!token){
+        return res.status(401).send({"msg":"token tidak ditemukan!"});
+    }
+
+    let user={};
+    try {
+        user = jwt.verify(token,"proyeksoa");
+    } catch (error) {
+        return res.status(400).send({"msg":"token tidak valid!"});
+    }
+    let judul = req.params.judul;
+    if(!judul){
+        return res.status(400).json({
+            message: 'Harap inputkan judul buku',
+            status_code: 400
+        });
+    }
+})
+
 //lihat preview buku
 router.post("/preview/:judul", async (req,res)=>{
     const token = req.header("x-auth-token");
@@ -70,8 +91,7 @@ router.post("/preview/:judul", async (req,res)=>{
     } catch (error) {
         return res.status(400).send({"msg":"token tidak valid!"});
     }
-
-    let judul = req.params.judul;
+    
     let conn = await db.getConn();
     let cariBuku = await db.executeQuery(`SELECT * FROM buku WHERE LOWER(buku) = '${judul.toLocaleLowerCase()}'`);
     conn.release();
