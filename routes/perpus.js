@@ -145,6 +145,7 @@ router.get("/books/:id_perpus", async(req,res)=>{
             let buku = await db.executeQuery(conn, `SELECT * FROM buku WHERE isbn = '${result[i].isbn}'`);
             const data =  {
                 id_buku: buku[0].id,
+                isbn: buku[0].isbn,
                 nama_buku: buku[0].judul,
                 author:buku[0].author,
                 genre:buku[0].genre,
