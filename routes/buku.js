@@ -273,15 +273,20 @@ router.get("/judul_buku", async(req, res) => {
     let user = cekJwt(req.header("x-auth-token"));
     if (user == null || user.role == "U") {
         return res.status(401).send({
-            "error": "Token Invalid"
+            "error": "Token Invalid", 
         });
     }
-
+    if(!req.query.judul){
+        return res.status(404).send({
+            "error": "Judul buku tidak ada"
+        });
+    }
     req.query.judul = req.query.judul || "";
     let author=`where judul like '%${req.query.judul}%'`;
     let conn= await db.getConn();
     let result= await db.executeQuery(conn, `SELECT id,judul,author,genre FROM buku ${author}`);
     conn.release();
+   
     return res.status(200).json(result);   
 })
 
@@ -293,7 +298,16 @@ router.get("/daftar_buku", async(req, res) => {
             "error": "Token Invalid"
         });
     }
-
+    if(!req.query.author){
+        return res.status(404).send({
+            "error": "Author tidak ada"
+        });
+    }
+    if(!req.query.genre){
+        return res.status(404).send({
+            "error": "Genre tidak ada"
+        });
+    }
     req.query.genre = req.query.genre || "";
     req.query.author = req.query.author || "";
     req.query.judul = req.query.judul || "";
@@ -314,14 +328,14 @@ router.get("/detail_buku", async(req, res) => {
         });
     }
 
-    let isbn=req.body.isbn;
+    let isbn=req.query.isbn;
     let conn= await db.getConn();
     let result= await db.executeQuery(conn, `SELECT isbn,judul,author,genre FROM buku where isbn='${isbn}'`);
     conn.release();
     if(result.length==0){
-        return res.status(500).json({
+        return res.status(401).json({
             message: 'ISBN buku tidak ditemukan',
-            status_code: 500
+            status_code: 401
         });
     }else{
         return res.status(200).json(result);         
@@ -336,7 +350,11 @@ router.get("/best_seller", async(req, res) => {
             "error": "Token Invalid"
         });
     }
-
+    if(req.query.limit==0){
+        return res.status(401).send({
+            "error": "Tidak ada buku best seller yang ditampilkan"
+        });
+    }
     console.log(user);
     let limit="";
     if(req.query.limit){
