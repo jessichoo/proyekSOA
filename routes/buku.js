@@ -274,16 +274,7 @@ router.get("/daftar_buku", async(req, res) => {
             "error": "Token tidak valid"
         });
     }
-    if(!req.query.author){
-        return res.status(404).send({
-            "error": "Author tidak ada"
-        });
-    }
-    if(!req.query.genre){
-        return res.status(404).send({
-            "error": "Genre tidak ada"
-        });
-    }
+    
     req.query.genre = req.query.genre || "";
     req.query.author = req.query.author || "";
     // req.query.judul = req.query.judul || "";
