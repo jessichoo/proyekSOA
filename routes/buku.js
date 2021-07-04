@@ -315,11 +315,12 @@ router.get("/detail_buku", async(req, res) => {
         return res.status(200).json(result);         
     }
   
-})
+});
 
+//lihat buku best seller
 router.get("/best_seller", async(req, res) => {
     let user = cekJwt(req.header("x-auth-token"));
-    if (user == null || user.role == "U") {
+    if (user == null || user.role != "U") {
         return res.status(401).send({
             "error": "Token tidak valid"
         });
