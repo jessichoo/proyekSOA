@@ -77,7 +77,6 @@ router.post('/register', upload.single("foto_ktp"), async (req, res) => {
     
     let conn = await db.getConn();
     let query = await db.executeQuery(conn, `select * from user where username = '${input.username}'`);
-
     if (query.length != 0) {
         conn.release();
         return res.status(400).send({
@@ -94,7 +93,6 @@ router.post('/register', upload.single("foto_ktp"), async (req, res) => {
     if (input.role == "U") {
         query = await db.executeQuery(conn, `select lpad(count(*)+1, 3, '0') as count from user where role = 'U'`);
         let id = "U" + query[0].count;
-
         query = await db.executeQuery(conn, `insert into user values ('${id}','${input.username}','${input.password}','${input.nama}', 0, 0, 'U')`);
 
         conn.release();
@@ -161,7 +159,6 @@ router.post('/login', async (req, res) => {
 
     let user = query[0];
     let role = "";
-
     switch (user.role) {
         case "P":
             role = "Perpustakaan";
@@ -210,12 +207,6 @@ router.post('/topup', async (req,res)=>{
             "data":result[0]
         });
     }
-    // else{
-    //     conn.release();
-    //     return res.status(400).send({
-    //         "message":"User Tidak Ditemukan"
-    //     })
-    // }
 });
 
 //update user
@@ -272,7 +263,6 @@ router.put("/update", async (req, res) => {
         });
     }
     conn.release();
-
     return res.status(200).send(updated);
 });
 
@@ -302,7 +292,6 @@ router.post("/bookshelf/add", async(req, res) => {
             status_code: 409
         });   
     }
-
     conn.release();
 
     conn= await db.getConn();
@@ -315,7 +304,6 @@ router.post("/bookshelf/add", async(req, res) => {
     }
 
     conn.release();
-
     return res.status(201).json({
         message: `Buku berjudul '${data[0].nama_buku}' berhasil ditambahkan ke bookshelf user`,
         data: input,
@@ -362,23 +350,6 @@ router.post("/recharge/apihit", async(req,res)=>{
     } catch (error) {
         return res.status(401).send({"msg":"token tidak valid!"});
     }
-    // let input = req.body;
-    // if(input.id_user==''){
-    //     return res.status(400).json({
-    //         message: 'Id user tidak boleh kosong!',
-    //         status_code: 400
-    //     });
-    // }
-    // let conn = await db.getConn();
-    // let cariUser = await db.executeQuery(conn, `SELECT * FROM user WHERE id_user = '${user.id_user}'` );
-    // // console.log(cariUser);
-    // conn.release();
-    // if(!cariUser.length){
-    //     return res.status(404).json({
-    //         message: 'User tidak terdaftar',
-    //         status_code: 404
-    //     });
-    // }
     if(user.saldo<10000){
         return res.status(500).json({
             message: 'Saldo anda tidak mencukupi',

@@ -15,30 +15,19 @@ app.use("/api/user/", user);
 app.use("/api/buku/", buku);
 app.use("/api/perpus/", perpus);
 
-// function autogen(input){
-//     var pad = "0000";
-//     var str = input + 1 + "" ;
-//     var hasil = " "+pad.substring(0, pad.length - str.length) + str;
-// }
-
 app.post("/api/books/add", async (req, res) => {
     const input = req.body;
     let arrHasil = [];
     try {
         let val = await axios.get("https://www.googleapis.com/books/v1/volumes/" + input.id_buku_api);
 
-        let result = val.data; 
-        // console.log(result);
-        // console.log(result.volumeInfo.title);
-
+        let result = val.data
         let data =  {
             id_buku: result.id,
             nama_buku: result.volumeInfo.title
         }
-
         arrHasil.push(data); 
     }
-
     catch(error) {
         console.log(error); 
     }
@@ -61,8 +50,6 @@ app.post("/api/books/add", async (req, res) => {
     var str = result.length + 1 + "" ;
     var id = "B" + pad.substring(0, pad.length - str.length) + str;
     
-    // arrHasil[0]["id"] = id;
-
     conn.release();
 
     //insert buku
@@ -75,8 +62,6 @@ app.post("/api/books/add", async (req, res) => {
         });
     }
     conn.release();
-
-
     return res.status(200).json({
         message: 'Berhasil menambahkan buku ke dalam database',
         data: arrHasil,
@@ -84,37 +69,6 @@ app.post("/api/books/add", async (req, res) => {
     });
 });
 
-
-//top up saldo
-app.post('/api/user/topup', async (req,res)=>{
-    let conn = await db.getConn();
-    let result = await db.executeQuery(conn, `SELECT * FROM user WHERE username = '${req.body.username}'`);
-    if(result.length !=0){
-        saldo = parseInt(req.body.saldo)+parseInt(result[0].saldo)
-        result = await db.executeQuery(conn, `update user set saldo='${saldo}' WHERE username = '${req.body.username}'`);
-        result = await db.executeQuery(conn, `SELECT * FROM user WHERE username = '${req.body.username}'`);
-        delete result[0].password
-        return res.status(200).send({
-            "status":200,
-            "data":result[0]
-        })
-        
-    }else{
-        return res.status(400).send({
-            "message":"User Tidak Ditemukan"
-        })
-    }
-    conn.release();
-
-})
-
-
-
-app.get("/api/library/books/:judul", async(req,res)=>{
-    let conn = await db.getConn();
-    
-    conn.release();
-});
 app.get("/api/buku/:id_buku", async (req, res) => {
     let conn = await db.getConn();
     let result = await db.executeQuery(conn, `SELECT * FROM buku WHERE id_buku = '${req.params.id_buku}'`);
@@ -162,9 +116,6 @@ app.post('/api/user/topup', async (req,res)=>{
 
 });
 
-
-
-
 app.get("/api/books/detail/:id_buku", async (req, res) => {
     let conn = await db.getConn();
     let result = await db.executeQuery(conn, `SELECT * FROM buku WHERE id_buku = '${req.params.id_buku}'`);
@@ -189,9 +140,6 @@ app.get("/api/books/detail/:id_buku", async (req, res) => {
     }
     conn.release();
 });
-
-//delete buku
-//tambah peminjaman buku -> perpus
 
 app.listen(3000, function() {
     console.log("listen 3000");

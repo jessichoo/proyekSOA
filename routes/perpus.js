@@ -39,7 +39,6 @@ router.get("/daftarbuku/:judul", async(req,res)=>{
     }
     let conn = await db.getConn();
     let idBuku = await db.executeQuery(conn,`SELECT * FROM buku WHERE LOWER(judul) like '%${req.params.judul.toLocaleLowerCase()}%'`);
-    console.log(idBuku);
     if(!idBuku.length){
         return res.status(404).json({
             message: 'Buku yang anda cari tidak ditemukan',
@@ -67,9 +66,6 @@ router.get("/daftarbuku/:judul", async(req,res)=>{
             const data =  {
                 id_perpus: tempToko[0].id_user,
                 nama_perpus: tempToko[0].nama
-                // alamat_perpus: tempToko[0].alamat,
-                // kota: tempToko[0].kota,
-                // no_telp:tempToko[0].no_telepon
             }
             daftarToko.push(data);
         }
@@ -134,7 +130,6 @@ router.get("/books/:id_perpus", async(req,res)=>{
     conn.release();
     conn = await db.getConn();
     let result = await db.executeQuery(conn, `SELECT * FROM buku_perpus WHERE id_perpus = '${req.params.id_perpus}' AND status = 1`);
-    //console.log(result);
     if(!result.length){
         return res.status(404).json({
             message: 'Tidak ada buku yang terdaftar pada perpustakaan ini',
@@ -161,7 +156,6 @@ router.get("/books/:id_perpus", async(req,res)=>{
         });
     }
     conn.release();
-    
 });
 
 module.exports = router;
