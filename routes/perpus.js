@@ -47,7 +47,7 @@ router.get("/daftarbuku/:judul", async(req,res)=>{
     } else {
         let daftarPerpus=[];
         conn = await db.getConn();
-        let idToko = await db.executeQuery(conn,`SELECT * FROM buku_perpus WHERE isbn = '${idBuku[0].isbn}'`);
+        let idToko = await db.executeQuery(conn,`SELECT * FROM buku_perpus WHERE isbn = '${idBuku[0].isbn}' AND status = 1`);
         if(!idToko.length){
             return res.status(404).json({
                 message: 'Tidak ada perpustakaan yang menyediakan buku ini',
@@ -132,7 +132,7 @@ router.get("/books/:id_perpus", async(req,res)=>{
     }
     conn.release();
     conn = await db.getConn();
-    let result = await db.executeQuery(conn, `SELECT * FROM buku_perpus WHERE id_perpus = '${req.params.id_perpus}'`);
+    let result = await db.executeQuery(conn, `SELECT * FROM buku_perpus WHERE id_perpus = '${req.params.id_perpus}' AND status = 1`);
     //console.log(result);
     if(!result.length){
         return res.status(404).json({
