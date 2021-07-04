@@ -251,7 +251,6 @@ router.get("/judul_buku", async(req, res) => {
             "error": "Judul buku tidak valid"
         });
     }
-
     req.query.judul = req.query.judul || "";
     let author=`where judul like '%${req.query.judul}%'`;
     let conn= await db.getConn();
@@ -275,7 +274,16 @@ router.get("/daftar_buku", async(req, res) => {
             "error": "Token tidak valid"
         });
     }
-
+    if(!req.query.author){
+        return res.status(404).send({
+            "error": "Author tidak ada"
+        });
+    }
+    if(!req.query.genre){
+        return res.status(404).send({
+            "error": "Genre tidak ada"
+        });
+    }
     req.query.genre = req.query.genre || "";
     req.query.author = req.query.author || "";
     // req.query.judul = req.query.judul || "";
@@ -326,7 +334,11 @@ router.get("/best_seller", async(req, res) => {
             "error": "Token tidak valid"
         });
     }
-
+    if(req.query.limit==0){
+        return res.status(401).send({
+            "error": "Tidak ada buku best seller yang ditampilkan"
+        });
+    }
     console.log(user);
     let limit="";
     if(req.query.limit){
