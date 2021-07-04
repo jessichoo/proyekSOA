@@ -6,6 +6,618 @@
 	},
 	"item": [
 		{
+			"name": "Cari daftar buku",
+			"item": [
+				{
+					"name": "tidak ada token",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:3000/api/perpus/books/:id_toko",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"perpus",
+								"books",
+								":id_toko"
+							],
+							"variable": [
+								{
+									"key": "id_toko",
+									"value": "P001"
+								}
+							]
+						},
+						"description": "Response yang diberikan ketika token tidak ditemukan"
+					},
+					"response": [
+						{
+							"name": "tidak ada token",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-auth-token",
+										"value": "",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "localhost:3000/api/perpus/books/:id_toko",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"perpus",
+										"books",
+										":id_toko"
+									],
+									"variable": [
+										{
+											"key": "id_toko",
+											"value": "P001"
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "32"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"20-qbvUAIkXqXgNLD2bx3o3kA8I5Aw\""
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jul 2021 01:59:35 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"msg\": \"token tidak ditemukan!\"\n}"
+						}
+					]
+				},
+				{
+					"name": "token tidak valid",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "asdasd",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:3000/api/perpus/books/:id_toko",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"perpus",
+								"books",
+								":id_toko"
+							],
+							"variable": [
+								{
+									"key": "id_toko",
+									"value": "P001"
+								}
+							]
+						},
+						"description": "Response yang dikembalikan ketika token yang ditemukan tidak valid"
+					},
+					"response": [
+						{
+							"name": "token tidak valid",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-auth-token",
+										"value": "asdasd",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "localhost:3000/api/perpus/books/:id_toko",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"perpus",
+										"books",
+										":id_toko"
+									],
+									"variable": [
+										{
+											"key": "id_toko",
+											"value": "P001"
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "28"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1c-8v/2dimXo2XkpR7khQ+/CCFo8ZU\""
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jul 2021 01:59:43 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"msg\": \"token tidak valid!\"\n}"
+						}
+					]
+				},
+				{
+					"name": "success",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{jwtkey}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:3000/api/perpus/books/:id_toko",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"perpus",
+								"books",
+								":id_toko"
+							],
+							"variable": [
+								{
+									"key": "id_toko",
+									"value": "P001"
+								}
+							]
+						},
+						"description": "Response yang dikembalikan ketika berhasil menampilkan daftar buku dari sebuah perpustakaan"
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-auth-token",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiUDAwMSIsInVzZXJuYW1lIjoicGVycHVzMSIsIm5hbWEiOiJOZXcgVXNlciAxIiwicm9sZSI6IlAiLCJhcGlfaGl0IjowLCJzYWxkbyI6MCwiaWF0IjoxNjI1MzYzOTYzfQ.NRHHxzj4xdwFlgqLgbahc6-TI0EEG84fUfdW_sdsK7E",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "localhost:3000/api/perpus/books/:id_toko",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"perpus",
+										"books",
+										":id_toko"
+									],
+									"variable": [
+										{
+											"key": "id_toko",
+											"value": "P001"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "166"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"a6-PU37WOmB5YNDBWV1dR0wjW6ZjIc\""
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jul 2021 02:01:31 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"daftar_buku\": [\n        {\n            \"id_buku\": \"B3qSvwEACAAJ\",\n            \"nama_buku\": \"Broken Things\",\n            \"author\": \"Lauren Oliver\",\n            \"genre\": \"Young Adult Fiction\",\n            \"tahun\": \"2019-09-03\"\n        }\n    ],\n    \"status_code\": 200\n}"
+						}
+					]
+				},
+				{
+					"name": "perpus tidak ditemukan",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{jwtkey}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:3000/api/perpus/books/:id_toko",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"perpus",
+								"books",
+								":id_toko"
+							],
+							"variable": [
+								{
+									"key": "id_toko",
+									"value": "P000"
+								}
+							]
+						},
+						"description": "Response yang dikembalikan ketika perpus yang dimaksud tidak ditemukan"
+					},
+					"response": [
+						{
+							"name": "perpus tidak ditemukan",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-auth-token",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiUDAwMSIsInVzZXJuYW1lIjoicGVycHVzMSIsIm5hbWEiOiJOZXcgVXNlciAxIiwicm9sZSI6IlAiLCJhcGlfaGl0IjowLCJzYWxkbyI6MCwiaWF0IjoxNjI1MzYzOTYzfQ.NRHHxzj4xdwFlgqLgbahc6-TI0EEG84fUfdW_sdsK7E",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "localhost:3000/api/perpus/books/:id_toko",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"perpus",
+										"books",
+										":id_toko"
+									],
+									"variable": [
+										{
+											"key": "id_toko",
+											"value": "P000"
+										}
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "75"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"4b-HfzQqPlvTluYLhQoSmNG+Q3be4c\""
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jul 2021 02:01:44 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Perpustakaan yang anda cari tidak terdaftar\",\n    \"status_code\": 404\n}"
+						}
+					]
+				},
+				{
+					"name": "id perpus tidak valid",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{jwtkey}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:3000/api/perpus/books/:id_toko",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"perpus",
+								"books",
+								":id_toko"
+							],
+							"variable": [
+								{
+									"key": "id_toko",
+									"value": "U001"
+								}
+							]
+						},
+						"description": "Response yang dikembalikan ketika id perpus yang diinputkan tidak valid"
+					},
+					"response": [
+						{
+							"name": "id perpus tidak valid",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-auth-token",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiUDAwMSIsInVzZXJuYW1lIjoicGVycHVzMSIsIm5hbWEiOiJOZXcgVXNlciAxIiwicm9sZSI6IlAiLCJhcGlfaGl0IjowLCJzYWxkbyI6MCwiaWF0IjoxNjI1MzYzOTYzfQ.NRHHxzj4xdwFlgqLgbahc6-TI0EEG84fUfdW_sdsK7E",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "localhost:3000/api/perpus/books/:id_toko",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"perpus",
+										"books",
+										":id_toko"
+									],
+									"variable": [
+										{
+											"key": "id_toko",
+											"value": "U001"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "72"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"48-4EorNX6i0rtP6k0AKCv8PHN6gkg\""
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jul 2021 02:01:54 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Id perpus yang anda masukkan tidak valid\",\n    \"status_code\": 400\n}"
+						}
+					]
+				},
+				{
+					"name": "id perpus kosong",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{jwtkey}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:3000/api/perpus/books/:id_toko",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"perpus",
+								"books",
+								":id_toko"
+							],
+							"variable": [
+								{
+									"key": "id_toko",
+									"value": ""
+								}
+							]
+						},
+						"description": "Response yang dikembalikan ketika id perpus tidak ditemukan"
+					},
+					"response": [
+						{
+							"name": "id perpus kosong",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-auth-token",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiUDAwMSIsInVzZXJuYW1lIjoicGVycHVzMSIsIm5hbWEiOiJOZXcgVXNlciAxIiwicm9sZSI6IlAiLCJhcGlfaGl0IjowLCJzYWxkbyI6MCwiaWF0IjoxNjI1MzYzOTYzfQ.NRHHxzj4xdwFlgqLgbahc6-TI0EEG84fUfdW_sdsK7E",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "localhost:3000/api/perpus/books/",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"perpus",
+										"books",
+										""
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "60"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"3c-Q9VVcZNNdOM71WNHXChbAw0GpdY\""
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jul 2021 02:03:41 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Id perpus tidak boleh kosong\",\n    \"status_code\": 400\n}"
+						}
+					]
+				}
+			],
+			"description": "Kumpulan response yang dikembalikan saat menggunakan request untuk melihat daftar buku suatu perpustakaan"
+		},
+		{
 			"name": "Lihat perpus yang menyediakan buku tertentu",
 			"item": [
 				{
@@ -47,7 +659,79 @@
 						},
 						"description": "Response apabila tidak ada token yang ditemukan"
 					},
-					"response": []
+					"response": [
+						{
+							"name": "tidak ada token",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-auth-token",
+										"value": "",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": []
+								},
+								"url": {
+									"raw": "localhost:3000/api/perpus/daftarbuku/:judul",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"perpus",
+										"daftarbuku",
+										":judul"
+									],
+									"variable": [
+										{
+											"key": "judul",
+											"value": "little magacal piya"
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "32"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"20-qbvUAIkXqXgNLD2bx3o3kA8I5Aw\""
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jul 2021 02:03:52 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"msg\": \"token tidak ditemukan!\"\n}"
+						}
+					]
 				},
 				{
 					"name": "token tidak valid",
@@ -81,7 +765,75 @@
 						},
 						"description": "Response apabila token yang ditemukan tidak valid"
 					},
-					"response": []
+					"response": [
+						{
+							"name": "token tidak valid",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-auth-token",
+										"value": "asdasd",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "localhost:3000/api/perpus/daftarbuku/:judul",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"perpus",
+										"daftarbuku",
+										":judul"
+									],
+									"variable": [
+										{
+											"key": "judul",
+											"value": "little magacal piya"
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "28"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1c-8v/2dimXo2XkpR7khQ+/CCFo8ZU\""
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jul 2021 02:03:57 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"msg\": \"token tidak valid!\"\n}"
+						}
+					]
 				},
 				{
 					"name": "judul kosong",
@@ -115,7 +867,69 @@
 						},
 						"description": "Response yang terjadi apabila user tidak menginputkan judul buku"
 					},
-					"response": []
+					"response": [
+						{
+							"name": "judul kosong",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-auth-token",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiUDAwMSIsInVzZXJuYW1lIjoicGVycHVzMSIsIm5hbWEiOiJOZXcgVXNlciAxIiwicm9sZSI6IlAiLCJhcGlfaGl0IjowLCJzYWxkbyI6MCwiaWF0IjoxNjI1MzYzOTYzfQ.NRHHxzj4xdwFlgqLgbahc6-TI0EEG84fUfdW_sdsK7E",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "localhost:3000/api/perpus/daftarbuku/",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"perpus",
+										"daftarbuku",
+										""
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "57"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"39-NX6DGV/B0TbMGjcoj2QRPGD+DjA\""
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jul 2021 02:04:14 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Harap inputkan judul buku\",\n    \"status_code\": 400\n}"
+						}
+					]
 				},
 				{
 					"name": "perpus tidak ditemukan",
@@ -149,7 +963,75 @@
 						},
 						"description": "Response apabila tidak ada perpus yang menyediakan buku yang dimaksud"
 					},
-					"response": []
+					"response": [
+						{
+							"name": "perpus tidak ditemukan",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-auth-token",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiUDAwMSIsInVzZXJuYW1lIjoicGVycHVzMSIsIm5hbWEiOiJOZXcgVXNlciAxIiwicm9sZSI6IlAiLCJhcGlfaGl0IjowLCJzYWxkbyI6MCwiaWF0IjoxNjI1MzYzOTYzfQ.NRHHxzj4xdwFlgqLgbahc6-TI0EEG84fUfdW_sdsK7E",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "localhost:3000/api/perpus/daftarbuku/:judul",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"perpus",
+										"daftarbuku",
+										":judul"
+									],
+									"variable": [
+										{
+											"key": "judul",
+											"value": "little magacal piya"
+										}
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "67"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"43-sPIIGGEVPYabZgb+WkYZ9zSMp7U\""
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jul 2021 02:04:27 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Buku yang anda cari tidak ditemukan\",\n    \"status_code\": 404\n}"
+						}
+					]
 				},
 				{
 					"name": "success",
@@ -183,220 +1065,78 @@
 						},
 						"description": "Response yang diberikan apabila ditemukan perpus yang menyediakan buku yang dimaksud"
 					},
-					"response": []
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-auth-token",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiUDAwMSIsInVzZXJuYW1lIjoicGVycHVzMSIsIm5hbWEiOiJOZXcgVXNlciAxIiwicm9sZSI6IlAiLCJhcGlfaGl0IjowLCJzYWxkbyI6MCwiaWF0IjoxNjI1MzYzOTYzfQ.NRHHxzj4xdwFlgqLgbahc6-TI0EEG84fUfdW_sdsK7E",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "localhost:3000/api/perpus/daftarbuku/:judul",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"perpus",
+										"daftarbuku",
+										":judul"
+									],
+									"variable": [
+										{
+											"key": "judul",
+											"value": "broken things"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "85"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"55-F5GDCB3AtQPLwtbejq3Ls9hgMIY\""
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jul 2021 02:04:56 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"daftar_perpus\": [\n        {\n            \"id_perpus\": \"P001\",\n            \"nama_perpus\": \"New User 1\"\n        }\n    ],\n    \"status_code\": 200\n}"
+						}
+					]
 				}
 			],
 			"description": "Kumpulan response yang dikembalikan saat melakukan request untuk melihat perpus yang menyediakan buku tertentu"
-		},
-		{
-			"name": "Cari daftar buku",
-			"item": [
-				{
-					"name": "tidak ada token",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "x-auth-token",
-								"value": "",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "localhost:3000/api/perpus/books/:id_toko",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"perpus",
-								"books",
-								":id_toko"
-							],
-							"variable": [
-								{
-									"key": "id_toko",
-									"value": "P001"
-								}
-							]
-						},
-						"description": "Response yang diberikan ketika token tidak ditemukan"
-					},
-					"response": []
-				},
-				{
-					"name": "token tidak valid",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "x-auth-token",
-								"value": "asdasd",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "localhost:3000/api/perpus/books/:id_toko",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"perpus",
-								"books",
-								":id_toko"
-							],
-							"variable": [
-								{
-									"key": "id_toko",
-									"value": "P001"
-								}
-							]
-						},
-						"description": "Response yang dikembalikan ketika token yang ditemukan tidak valid"
-					},
-					"response": []
-				},
-				{
-					"name": "success",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "x-auth-token",
-								"value": "{{jwtkey}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "localhost:3000/api/perpus/books/:id_toko",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"perpus",
-								"books",
-								":id_toko"
-							],
-							"variable": [
-								{
-									"key": "id_toko",
-									"value": "P001"
-								}
-							]
-						},
-						"description": "Response yang dikembalikan ketika berhasil menampilkan daftar buku dari sebuah perpustakaan"
-					},
-					"response": []
-				},
-				{
-					"name": "perpus tidak ditemukan",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "x-auth-token",
-								"value": "{{jwtkey}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "localhost:3000/api/perpus/books/:id_toko",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"perpus",
-								"books",
-								":id_toko"
-							],
-							"variable": [
-								{
-									"key": "id_toko",
-									"value": "P000"
-								}
-							]
-						},
-						"description": "Response yang dikembalikan ketika perpus yang dimaksud tidak ditemukan"
-					},
-					"response": []
-				},
-				{
-					"name": "id perpus tidak valid",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "x-auth-token",
-								"value": "{{jwtkey}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "localhost:3000/api/perpus/books/:id_toko",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"perpus",
-								"books",
-								":id_toko"
-							],
-							"variable": [
-								{
-									"key": "id_toko",
-									"value": "U001"
-								}
-							]
-						},
-						"description": "Response yang dikembalikan ketika id perpus yang diinputkan tidak valid"
-					},
-					"response": []
-				},
-				{
-					"name": "id perpus kosong",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "x-auth-token",
-								"value": "{{jwtkey}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "localhost:3000/api/perpus/books/:id_toko",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"perpus",
-								"books",
-								":id_toko"
-							],
-							"variable": [
-								{
-									"key": "id_toko",
-									"value": ""
-								}
-							]
-						},
-						"description": "Response yang dikembalikan ketika id perpus tidak ditemukan"
-					},
-					"response": []
-				}
-			],
-			"description": "Kumpulan response yang dikembalikan saat menggunakan request untuk melihat daftar buku suatu perpustakaan"
 		},
 		{
 			"name": "Recharge API",
@@ -437,7 +1177,80 @@
 						},
 						"description": "Response yang dikembalikan ketika user berhasil melakukan recharge api hit"
 					},
-					"response": []
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-auth-token",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiVTAwMiIsInVzZXJuYW1lIjoidXNlcjEiLCJuYW1hIjoiTmV3IFVzZXIgMSIsInJvbGUiOiJVIiwiYXBpX2hpdCI6MCwic2FsZG8iOjEwMDAwMCwiaWF0IjoxNjI1MzY0Mzc4fQ.cF768Jp8E62xKliszTUNkWN4f7VM1ZW_UJmMhypiXYA",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "id_user",
+											"value": "U001",
+											"type": "text",
+											"disabled": true
+										}
+									]
+								},
+								"url": {
+									"raw": "localhost:3000/api/user/recharge/apihit",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"user",
+										"recharge",
+										"apihit"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "57"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"39-GAgP9XSMSXdWjr09934n1zSjdms\""
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jul 2021 02:06:32 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Recharge API_hit berhasil\",\n    \"status_code\": 200\n}"
+						}
+					]
 				},
 				{
 					"name": "tidak ada token",
@@ -483,7 +1296,87 @@
 						},
 						"description": "Response yang diberikan ketika tidak ada token yang ditemukan"
 					},
-					"response": []
+					"response": [
+						{
+							"name": "tidak ada token",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-auth-token",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "id_user",
+											"value": "",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "localhost:3000/api/user/recharge/apihit",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"user",
+										"recharge",
+										"apihit"
+									],
+									"query": [
+										{
+											"key": "x-auth-token",
+											"value": null,
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "32"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"20-qbvUAIkXqXgNLD2bx3o3kA8I5Aw\""
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jul 2021 02:05:27 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"msg\": \"token tidak ditemukan!\"\n}"
+						}
+					]
 				},
 				{
 					"name": "token tidak valid",
@@ -521,83 +1414,79 @@
 						},
 						"description": "Response yang diberikan ketika token yang ditemukan tidak valid"
 					},
-					"response": []
-				},
-				{
-					"name": "id user kosong",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "x-auth-token",
-								"value": "",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "id_user",
-									"value": "",
-									"type": "text"
+					"response": [
+						{
+							"name": "token tidak valid",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-auth-token",
+										"value": "asdasd",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "id_user",
+											"value": "",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "localhost:3000/api/user/recharge/apihit",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"user",
+										"recharge",
+										"apihit"
+									]
 								}
-							]
-						},
-						"url": {
-							"raw": "localhost:3000/api/user/recharge/apihit",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"user",
-								"recharge",
-								"apihit"
-							]
-						},
-						"description": "Response yang diberikan ketika id user kosong"
-					},
-					"response": []
-				},
-				{
-					"name": "user tidak ditemukan",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "x-auth-token",
-								"value": "{{jwtkey}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
 								{
-									"key": "id_user",
-									"value": "U000",
-									"type": "text"
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "28"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1c-8v/2dimXo2XkpR7khQ+/CCFo8ZU\""
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jul 2021 02:05:32 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
 								}
-							]
-						},
-						"url": {
-							"raw": "localhost:3000/api/user/recharge/apihit",
-							"host": [
-								"localhost"
 							],
-							"port": "3000",
-							"path": [
-								"api",
-								"user",
-								"recharge",
-								"apihit"
-							]
-						},
-						"description": "Response yang diberikan ketika tidak ditemukan user yang dimaksud"
-					},
-					"response": []
+							"cookie": [],
+							"body": "{\n    \"msg\": \"token tidak valid!\"\n}"
+						}
+					]
 				},
 				{
 					"name": "saldo tidak cukup",
@@ -635,7 +1524,79 @@
 						},
 						"description": "Response yang diberikan ketika saldo tidak cukup"
 					},
-					"response": []
+					"response": [
+						{
+							"name": "saldo tidak cukup",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-auth-token",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiUDAwMSIsInVzZXJuYW1lIjoicGVycHVzMSIsIm5hbWEiOiJOZXcgVXNlciAxIiwicm9sZSI6IlAiLCJhcGlfaGl0IjowLCJzYWxkbyI6MCwiaWF0IjoxNjI1MzYzOTYzfQ.NRHHxzj4xdwFlgqLgbahc6-TI0EEG84fUfdW_sdsK7E",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "id_user",
+											"value": "U001",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "localhost:3000/api/user/recharge/apihit",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"user",
+										"recharge",
+										"apihit"
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "58"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"3a-CPYh+N+TaSjDkTOGHwJyv67V1PY\""
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jul 2021 02:05:42 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Saldo anda tidak mencukupi\",\n    \"status_code\": 500\n}"
+						}
+					]
 				}
 			],
 			"description": "Kumpulan response yang dikembalikan ketika user mengakses request untuk recharge API hit"
@@ -644,7 +1605,7 @@
 			"name": "Lihat preview buku",
 			"item": [
 				{
-					"name": "token tidak valid",
+					"name": "token tidak ditemukan",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -675,10 +1636,78 @@
 						},
 						"description": "Response yang diberikan ketika token yang ditemukan tidak valid"
 					},
-					"response": []
+					"response": [
+						{
+							"name": "token tidak valid",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-auth-token",
+										"value": "",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "localhost:3000/api/buku/preview/:judul",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"buku",
+										"preview",
+										":judul"
+									],
+									"variable": [
+										{
+											"key": "judul",
+											"value": "little magacal piya"
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "32"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"20-qbvUAIkXqXgNLD2bx3o3kA8I5Aw\""
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jul 2021 02:07:14 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"msg\": \"token tidak ditemukan!\"\n}"
+						}
+					]
 				},
 				{
-					"name": "token tidak ditemukan",
+					"name": "token tidak valid",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -709,7 +1738,75 @@
 						},
 						"description": "Response yang diberikan ketika token tidak ditemukan"
 					},
-					"response": []
+					"response": [
+						{
+							"name": "token tidak ditemukan",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-auth-token",
+										"value": "asdasd",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "localhost:3000/api/buku/preview/:judul",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"buku",
+										"preview",
+										":judul"
+									],
+									"variable": [
+										{
+											"key": "judul",
+											"value": "little magacal piya"
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "28"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1c-8v/2dimXo2XkpR7khQ+/CCFo8ZU\""
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jul 2021 02:07:20 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"msg\": \"token tidak valid!\"\n}"
+						}
+					]
 				},
 				{
 					"name": "success",
@@ -743,7 +1840,75 @@
 						},
 						"description": "Response yang diberikan ketika berhasil menampilkan link untuk preview buku yang dimaksud"
 					},
-					"response": []
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-auth-token",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiVTAwMiIsInVzZXJuYW1lIjoidXNlcjEiLCJuYW1hIjoiTmV3IFVzZXIgMSIsInJvbGUiOiJVIiwiYXBpX2hpdCI6MjAsInNhbGRvIjo5MDAwMCwiaWF0IjoxNjI1MzY0NzYxfQ.KQVde2lQj2Lu8PWJXG5wcDcUGaMoAY7Pav1wgrtF9eI",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "localhost:3000/api/buku/preview/:judul",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"buku",
+										"preview",
+										":judul"
+									],
+									"variable": [
+										{
+											"key": "judul",
+											"value": "broken things"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "144"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"90-MooQ2VtNCmWV3mPX7DV/klxrjhY\""
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jul 2021 02:12:55 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"link_preview\": {\n        \"preview_link\": \"http://play.google.com/books/reader?id=68yVCwAAQBAJ&hl=&printsec=frontcover&source=gbs_api\"\n    },\n    \"status_code\": 200\n}"
+						}
+					]
 				},
 				{
 					"name": "judul buku kosong",
@@ -771,7 +1936,69 @@
 						},
 						"description": "Response yang diberikan ketika tidak ada judul buku yang ditemukan"
 					},
-					"response": []
+					"response": [
+						{
+							"name": "judul buku kosong",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-auth-token",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiVTAwMiIsInVzZXJuYW1lIjoidXNlcjEiLCJuYW1hIjoiTmV3IFVzZXIgMSIsInJvbGUiOiJVIiwiYXBpX2hpdCI6MCwic2FsZG8iOjEwMDAwMCwiaWF0IjoxNjI1MzY0Mzc4fQ.cF768Jp8E62xKliszTUNkWN4f7VM1ZW_UJmMhypiXYA",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "localhost:3000/api/buku/preview/",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"buku",
+										"preview",
+										""
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "57"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"39-NX6DGV/B0TbMGjcoj2QRPGD+DjA\""
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jul 2021 02:07:45 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Harap inputkan judul buku\",\n    \"status_code\": 400\n}"
+						}
+					]
 				},
 				{
 					"name": "judul buku tidak terdaftar",
@@ -805,7 +2032,75 @@
 						},
 						"description": "Response yang diberikan apabila buku yang dimaksud tidak terdaftar pada database"
 					},
-					"response": []
+					"response": [
+						{
+							"name": "judul buku tidak terdaftar",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-auth-token",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiVTAwMiIsInVzZXJuYW1lIjoidXNlcjEiLCJuYW1hIjoiTmV3IFVzZXIgMSIsInJvbGUiOiJVIiwiYXBpX2hpdCI6MCwic2FsZG8iOjEwMDAwMCwiaWF0IjoxNjI1MzY0Mzc4fQ.cF768Jp8E62xKliszTUNkWN4f7VM1ZW_UJmMhypiXYA",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "localhost:3000/api/buku/preview/:judul",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"buku",
+										"preview",
+										":judul"
+									],
+									"variable": [
+										{
+											"key": "judul",
+											"value": "little magacal piya"
+										}
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "66"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"42-Q0rwdkfg0LmXBELxnleIcxjlBz8\""
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jul 2021 02:07:52 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Buku yang anda cari tidak tersedia\",\n    \"status_code\": 404\n}"
+						}
+					]
 				},
 				{
 					"name": "saldo tidak cukup",
@@ -839,7 +2134,75 @@
 						},
 						"description": "Response yang diberikan apabila saldo user tidak cukup untuk melihat preview buku"
 					},
-					"response": []
+					"response": [
+						{
+							"name": "saldo tidak cukup",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-auth-token",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiVTAwMiIsInVzZXJuYW1lIjoidXNlcjEiLCJuYW1hIjoiTmV3IFVzZXIgMSIsInJvbGUiOiJVIiwiYXBpX2hpdCI6MTgsInNhbGRvIjowLCJpYXQiOjE2MjUzNjQ4OTB9.CsAjjGhvOqpqO4azF0ykIqv_NCQ4N45E6AVZZU5dbv4",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "localhost:3000/api/buku/preview/:judul",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"buku",
+										"preview",
+										":judul"
+									],
+									"variable": [
+										{
+											"key": "judul",
+											"value": "broken things"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "54"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"36-P/8wXIIpiO7V/GuGXHYJmU/YLiQ\""
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jul 2021 02:15:10 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Saldo anda tidak cukup\",\n    \"status_code\": 400\n}"
+						}
+					]
 				},
 				{
 					"name": "api hit tidak cukup",
@@ -873,7 +2236,75 @@
 						},
 						"description": "Response yang diberikan ketika api hit user tidak cukup untuk melihat preview buku"
 					},
-					"response": []
+					"response": [
+						{
+							"name": "api hit tidak cukup",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-auth-token",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiUDAwMiIsInVzZXJuYW1lIjoidXNlcjIiLCJuYW1hIjoiTmV3IFVzZXIgMiIsInJvbGUiOiJQIiwiYXBpX2hpdCI6MCwic2FsZG8iOjAsImlhdCI6MTYyNTM2NDg1Mn0.IPE7vugNeXinTezmrFNCkR3Z2akfhSJsERRd16ENAbE",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "localhost:3000/api/buku/preview/:judul",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"buku",
+										"preview",
+										":judul"
+									],
+									"variable": [
+										{
+											"key": "judul",
+											"value": "broken things"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "56"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"38-6ue92ObdR0YGUHMKn0m8pMgVZWo\""
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jul 2021 02:14:28 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Api hit anda tidak cukup\",\n    \"status_code\": 400\n}"
+						}
+					]
 				}
 			],
 			"description": "Kumpulan response yang diberikan ketika user mengakses request untuk melihat preview buku"
