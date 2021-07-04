@@ -31,6 +31,9 @@ router.get("/daftarbuku/:judul", async(req,res)=>{
     let user={};
     try {
         user = jwt.verify(token,"proyeksoa");
+        if (user.role != "U") {
+            return res.status(401).send({"msg":"token tidak valid!"});
+        }
     } catch (error) {
         return res.status(401).send({"msg":"token tidak valid!"});
     }
@@ -105,6 +108,9 @@ router.get("/books/:id_perpus", async(req,res)=>{
     let user={};
     try {
         user = jwt.verify(token,"proyeksoa");
+        if (user.role != "U" && user.id_user != req.params.id_perpus) {
+            return res.status(401).send({"msg":"token tidak valid!"});
+        }
     } catch (error) {
         return res.status(401).send({"msg":"token tidak valid!"});
     }
