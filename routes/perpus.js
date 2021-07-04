@@ -38,7 +38,8 @@ router.get("/daftarbuku/:judul", async(req,res)=>{
         return res.status(401).send({"msg":"token tidak valid!"});
     }
     let conn = await db.getConn();
-    let idBuku = await db.executeQuery(conn,`SELECT * FROM buku WHERE LOWER(judul) = '${req.params.judul.toLocaleLowerCase()}'`);
+    let idBuku = await db.executeQuery(conn,`SELECT * FROM buku WHERE LOWER(judul) like '%${req.params.judul.toLocaleLowerCase()}%'`);
+    console.log(idBuku);
     if(!idBuku.length){
         return res.status(404).json({
             message: 'Buku yang anda cari tidak ditemukan',
@@ -145,6 +146,7 @@ router.get("/books/:id_perpus", async(req,res)=>{
             let buku = await db.executeQuery(conn, `SELECT * FROM buku WHERE isbn = '${result[i].isbn}'`);
             const data =  {
                 id_buku: buku[0].id,
+                isbn: buku[0].isbn,
                 nama_buku: buku[0].judul,
                 author:buku[0].author,
                 genre:buku[0].genre,

@@ -274,16 +274,7 @@ router.get("/daftar_buku", async(req, res) => {
             "error": "Token tidak valid"
         });
     }
-    if(!req.query.author){
-        return res.status(404).send({
-            "error": "Author tidak ada"
-        });
-    }
-    if(!req.query.genre){
-        return res.status(404).send({
-            "error": "Genre tidak ada"
-        });
-    }
+    
     req.query.genre = req.query.genre || "";
     req.query.author = req.query.author || "";
     // req.query.judul = req.query.judul || "";
@@ -324,11 +315,12 @@ router.get("/detail_buku", async(req, res) => {
         return res.status(200).json(result);         
     }
   
-})
+});
 
+//lihat buku best seller
 router.get("/best_seller", async(req, res) => {
     let user = cekJwt(req.header("x-auth-token"));
-    if (user == null || user.role == "U") {
+    if (user == null || user.role != "U") {
         return res.status(401).send({
             "error": "Token tidak valid"
         });
