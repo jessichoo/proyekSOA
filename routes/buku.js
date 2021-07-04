@@ -456,19 +456,45 @@ router.put("/request/update", async(req, res) => {
         });
     }
     
-    let conn= await db.getConn();
-    let result= await db.executeQuery(conn, `SELECT * FROM buku WHERE isbn = '${tempBuku.isbn}'`);
-    // console.log(tempBuku.idbuku);
-    // console.log(result)
-
-    conn.release();
+    if(setStatus == 2){
+        let conn= await db.getConn();
+        let result= await db.executeQuery(conn, `SELECT * FROM buku WHERE isbn = '${tempBuku.isbn}'`);
+        // console.log(tempBuku.idbuku);
+        // console.log(result)
     
-    
-    if (!result.length) { //kalau buku blm pernah terdaftar, insert dulu ke tabel buku
-        conn= await db.getConn();
-        result= await db.executeQuery(conn, `INSERT INTO buku VALUES ('${dataBuku[0].id_buku}', '${dataBuku[0].isbn}', '${dataBuku[0].nama_buku}', '${dataBuku[0].author}', '${dataBuku[0].tahun}', '${dataBuku[0].genre}', 0)`);
         conn.release();
-
+        
+        
+        if (!result.length) { //kalau buku blm pernah terdaftar, insert dulu ke tabel buku
+            conn= await db.getConn();
+            result= await db.executeQuery(conn, `INSERT INTO buku VALUES ('${dataBuku[0].id_buku}', '${dataBuku[0].isbn}', '${dataBuku[0].nama_buku}', '${dataBuku[0].author}', '${dataBuku[0].tahun}', '${dataBuku[0].genre}', 0)`);
+            conn.release();
+    
+            if (result.affectedRows === 0) {
+                return res.status(500).json({
+                    message: 'Terjadi kesalahan pada server',
+                    status_code: 500
+                });
+            }
+        }
+    
+        conn1= await db.getConn();
+        result1= await db.executeQuery(conn1, `SELECT * FROM buku_perpus WHERE id_perpus = '${user.id_user}' AND isbn = '${tempBuku.isbn}'`);
+        // console.log(result1);
+        if (result1.length) { //buku terdaftar pada tabel buku_perpus
+            return res.status(409).json({
+                message: 'Buku sudah terdaftar di perpustakaan',
+                status_code: 409
+            });
+        }
+        conn1.release();
+    
+        
+        conn= await db.getConn();
+        
+        result= await db.executeQuery(conn, `INSERT INTO buku_perpus values('${tempBuku.isbn}', '${user.id_user}', 1)`);
+        conn.release();
+    
         if (result.affectedRows === 0) {
             return res.status(500).json({
                 message: 'Terjadi kesalahan pada server',
@@ -476,30 +502,7 @@ router.put("/request/update", async(req, res) => {
             });
         }
     }
-
-    conn1= await db.getConn();
-    result1= await db.executeQuery(conn1, `SELECT * FROM buku_perpus WHERE id_perpus = '${user.id_user}' AND isbn = '${tempBuku.isbn}'`);
-    // console.log(result1);
-    if (result1.length) { //buku terdaftar pada tabel buku_perpus
-        return res.status(409).json({
-            message: 'Buku sudah terdaftar di perpustakaan',
-            status_code: 409
-        });
-    }
-    conn1.release();
-
-    
-    conn= await db.getConn();
-    
-    result= await db.executeQuery(conn, `INSERT INTO buku_perpus values('${tempBuku.isbn}', '${user.id_user}', 1)`);
-    conn.release();
-
-    if (result.affectedRows === 0) {
-        return res.status(500).json({
-            message: 'Terjadi kesalahan pada server',
-            status_code: 500
-        });
-    }
+   
 
     // setelah semua pengecekan lancar, update status
     conn= await db.getConn();
