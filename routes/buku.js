@@ -87,6 +87,7 @@ router.post("/preview/:judul", async (req,res)=>{
     let user={};
     try {
         user = jwt.verify(token,"proyeksoa");
+        console.log(user);
     } catch (error) {
         return res.status(401).send({"msg":"token tidak valid!"});
     }
@@ -131,10 +132,11 @@ router.post("/preview/:judul", async (req,res)=>{
 
     //console.log(cekAccess.length);
     if(cekAccess.length<2){
-        if(user.api_hit>=1){
+        if(user.api_hit>0){
             conn = await db.getConn();
             let minApiHit = await db.executeQuery(conn, `UPDATE user SET api_hit = api_hit-1 WHERE id_user = '${user.id_user}'`);
         } else {
+            console.log(user.api_hit);
             return res.status(400).json({
                 message: 'Api hit anda tidak cukup',
                 status_code: 400

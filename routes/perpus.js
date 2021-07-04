@@ -77,6 +77,24 @@ router.get("/daftarbuku/:judul", async(req,res)=>{
     conn.release();
 });
 
+router.get("/books", async(req,res)=>{
+    const token = req.header("x-auth-token");
+    if(!token){
+        return res.status(401).send({"msg":"token tidak ditemukan!"});
+    }
+
+    let user={};
+    try {
+        user = jwt.verify(token,"proyeksoa");
+    } catch (error) {
+        return res.status(401).send({"msg":"token tidak valid!"});
+    }
+    return res.status(400).json({
+        message: 'Id perpus tidak boleh kosong',
+        status_code: 400
+    });
+})
+
 //lihat buku yang terdaftar pada perpus
 router.get("/books/:id_perpus", async(req,res)=>{
     const token = req.header("x-auth-token");
@@ -118,7 +136,7 @@ router.get("/books/:id_perpus", async(req,res)=>{
     } else {
         for (let i = 0; i < result.length; i++) {
             conn = await db.getConn();
-            let buku = await db.executeQuery(conn, `SELECT * FROM buku WHERE id = '${result[i].id_buku}'`);
+            let buku = await db.executeQuery(conn, `SELECT * FROM buku WHERE isbn = '${result[i].isbn}'`);
             const data =  {
                 id_buku: buku[0].id,
                 nama_buku: buku[0].judul,
